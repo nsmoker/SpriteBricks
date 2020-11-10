@@ -1,0 +1,6 @@
+build
+bin
+.vscode
+.metals
+cmake-build-debug
+.idea
