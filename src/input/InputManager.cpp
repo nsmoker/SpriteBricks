@@ -14,6 +14,6 @@ namespace engine {
     bool InputManager::keyDown(SDL_Keycode key) { return kbState[key] == 1; }
     bool InputManager::keyPressed(SDL_Keycode key) { return kbState[key] == 1 && oldState[key] == 0; }
     InputManager::~InputManager() {
-        delete oldState;
+        delete[] oldState;
     }
 }

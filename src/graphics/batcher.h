@@ -1,5 +1,6 @@
 #include "graphicsDevice.h"
 #include "../math/rectangle.h"
+#include "../texture/Texture.h"
 
 namespace engine {
     /*
@@ -20,7 +21,7 @@ namespace engine {
                 float b;
                 float a;
                 float rotation;
-                TextureInfo tex;
+                uint tex;
             };
             GraphicsDevice* _device;
             float xOrigin = 0.0f;
@@ -33,19 +34,8 @@ namespace engine {
         public:
             explicit Batcher(GraphicsDevice &device);
             // Submit a texture for drawing. Note that this just adds it to the queue, you need to call render to actually make things appear.
-            void draw(TextureInfo tex,
-                      Rectangle dest,
-                      float scaleX = 1.0f,
-                      float scaleY = 1.0f,
-                      float rotation = 0,
-                      float a = 1.0f,
-                      float r = 1.0f,
-                      float g = 1.0f,
-                      float b = 1.0f,
-                      float texCoordTLX = 0,
-                      float texCoordTLY = 1,
-                      float texCoordBRX = 1,
-                      float texCoordBRY = 0);
+            void draw(Texture& tex, Rectangle dest, float scaleX = 1.0f, float scaleY = 1.0f, float rotation = 0, float a = 1.0f,
+                      float r = 1.0f, float g = 1.0f, float b = 1.0f);
             // This draws everything in the queue and then clears it. You should probably call this every frame if you're using the batcher.
             void render();
     };

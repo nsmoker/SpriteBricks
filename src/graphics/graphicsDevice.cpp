@@ -1,7 +1,6 @@
 #include "graphicsDevice.h"
-#include <SDL2/SDL_image.h>
 #include <iostream>
-#include <stdint.h>
+#include <cstdint>
 
 namespace engine {
 
@@ -32,18 +31,15 @@ namespace engine {
         return ret;
     }
 
-    // TODO: This being here is actually evil. It should move into an image layer.
-    TextureInfo GraphicsDevice::createTextureFromFile(const char* path) {
-        auto ret = TextureInfo { 0 };
-        glGenTextures(1, &ret.id);
-        glBindTexture(GL_TEXTURE_2D, ret.id);
-        SDL_Surface* surf = IMG_Load(path);
-        GLint mode = surf->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, mode, surf->w, surf->h, 0, mode, GL_UNSIGNED_BYTE, surf->pixels);
+    int GraphicsDevice::uploadTexture(void* data, int width, int height, int bytesPerPixel) {
+        uint id;
+        glGenTextures(1, &id);
+        glBindTexture(GL_TEXTURE_2D, id);
+        GLint mode = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, mode, width, height, 0, mode, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
-        SDL_FreeSurface(surf);
-        return ret;
+        return id;
     }
 
     void GraphicsDevice::meshVertexData(MeshInfo &mesh, float data[], GLuint count) {
@@ -86,15 +82,15 @@ namespace engine {
         glBindVertexArray(0);
     }
 
-    void GraphicsDevice::setTextureWrapping(TextureInfo tex, GLint type) {
-        glBindTexture(GL_TEXTURE_2D, tex.id);
+    void GraphicsDevice::setTextureWrapping(int tex, GLint type) {
+        glBindTexture(GL_TEXTURE_2D, tex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, type);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, type);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void GraphicsDevice::setTextureFiltering(TextureInfo tex, GLint type) {
-        glBindTexture(GL_TEXTURE_2D, tex.id);
+    void GraphicsDevice::setTextureFiltering(int tex, GLint type) {
+        glBindTexture(GL_TEXTURE_2D, tex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, type);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, type);
         glBindTexture(GL_TEXTURE_2D, 0);

@@ -41,12 +41,6 @@ namespace engine {
         bool normalized;
     };
 
-    // Data type that encapsulates a texture
-    struct TextureInfo {
-        // The id of the OpenGL texture object.
-        GLuint id;
-    };
-
     // Data type that encapsulates a rendering call
     struct RenderInfo {
         MeshInfo mesh;
@@ -70,10 +64,8 @@ namespace engine {
             // Create an empty mesh 
             MeshInfo createMesh();
 
-            TextureInfo createTextureFromFile(const char* path);
-
-            // Create a shader
-            inline engine::Shader createShader(const char* vertexSource, const char* fragmentSource) { return engine::Shader(vertexSource, fragmentSource); }
+            // Upload a texture to the GPU. Returns the ID of the OpenGL Texture object generated.
+            int uploadTexture(void* data, int width, int height, int bytesPerPixel);
 
             // Assign data to a mesh's vertex buffers. If the buffers do not yet exist, generates them. 
             void meshVertexData(MeshInfo& mesh, float data[], GLuint count);
@@ -87,11 +79,11 @@ namespace engine {
             // Activate vertex attributes
             void enableAttributes(MeshInfo& mesh, VertexAttributeInfo attribs[], GLuint vertSize, GLuint numAttribs);
 
-            // Sets the texture to use type for texture wrapping
-            void setTextureWrapping(TextureInfo tex, GLint type);
+            // Sets the type of texture wrapping to use for the texture ID passed in.
+            void setTextureWrapping(int tex, GLint type);
 
             // Sets the texture to dest to use type for filtering
-            void setTextureFiltering(TextureInfo tex, GLint filter);
+            void setTextureFiltering(int tex, GLint filter);
 
             // Render stuff
             void render(RenderInfo call);

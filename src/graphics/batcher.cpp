@@ -56,24 +56,25 @@ namespace engine {
         _device->enableAttributes(mesh, atts, 11, 5);
     }
 
-
-    void Batcher::draw(TextureInfo tex, Rectangle dest, float scaleX, float scaleY, float rotation, float a, float r,
-                       float g, float b, float texCoordTLX, float texCoordTLY, float texCoordBRX, float texCoordBRY) {
+    void Batcher::draw(Texture& tex, Rectangle dest, float scaleX, float scaleY, float rotation, float a, float r,
+                       float g, float b) {
+        Rectangle srcRect = tex.getSrcRect();
+        auto evil = TextureInfo { (uint) tex.getId() };
         elems.push_back(verts.size());
         elems.push_back(verts.size() + 1);
         elems.push_back(verts.size() + 2);
         elems.push_back(verts.size() + 1);
         elems.push_back(verts.size() + 2);
         elems.push_back(verts.size() + 3);
-        verts.push_back(Vertex { dest.posX(), dest.posY() + dest.height(), texCoordTLX, texCoordTLY, scaleX, scaleY, r, g, b, a, rotation, tex}); // Top left
-        verts.push_back(Vertex { dest.posX(), dest.posY(), texCoordTLX, texCoordBRY, scaleX, scaleY, r, g, b, a, rotation, tex}); // Bottom left
-        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY() + dest.height(), texCoordBRX, texCoordTLY, scaleX, scaleY, r, g, b, a, rotation, tex}); // Top right
-        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY(), texCoordBRX, texCoordBRY, scaleX, scaleY, r, g, b, a, rotation, tex}); // Bottom right
+        verts.push_back(Vertex { dest.posX(), dest.posY(), srcRect.top_left().first, srcRect.top_left().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top left
+        verts.push_back(Vertex { dest.posX(), dest.posY() + dest.height(), srcRect.top_left().first, srcRect.bottom_right().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom left
+        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY(), srcRect.bottom_right().first, srcRect.top_left().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top right
+        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY() + dest.height(), srcRect.bottom_right().first, srcRect.bottom_right().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom right
     }
 
     void Batcher::render() {
         // Sort the vector by texture
-        std::sort(verts.begin(), verts.end(), [](Vertex v, Vertex v2) { return v.tex.id < v2.tex.id; });
+        std::sort(verts.begin(), verts.end(), [](Vertex v, Vertex v2) { return v.tex < v2.tex; });
 
         // Evil pointer arithmetic to get the vertex data without the TextureInfo
         float actualData[verts.size() * 11];
@@ -88,15 +89,15 @@ namespace engine {
         int tex = -1;
         int offset = 0;
         for(int i = 0; i < verts.size(); ++i) {
-            if(tex != -1 && verts[i].tex.id != tex || i == verts.size() - 1) {
+            if(tex != -1 && verts[i].tex != tex || i == verts.size() - 1) {
                 material.setTexture(tex);
                 _device->meshVertexData(mesh, &actualData[offset], (i + 1) - offset);
                 _device->meshElementData(mesh, elems.data(), elems.size());
                 _device->render(RenderInfo { mesh, material });
-                tex = verts[i].tex.id;
+                tex = verts[i].tex;
                 offset = i - 1;
             } else {
-                tex = verts[i].tex.id;
+                tex = verts[i].tex;
             }
         }
         verts.clear();

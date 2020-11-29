@@ -11,7 +11,7 @@ add_library(engine
     graphics/batcher.cpp
     graphics/batcher.h
 
-        math/rectangle.cpp math/rectangle.h input/InputManager.cpp input/InputManager.h)
+        math/rectangle.cpp math/rectangle.h input/InputManager.cpp input/InputManager.h texture/Texture.cpp texture/Texture.h)
 
 cmake_policy(SET CMP0072 NEW)
 
