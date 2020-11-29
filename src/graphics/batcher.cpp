@@ -59,7 +59,6 @@ namespace engine {
     void Batcher::draw(Texture& tex, Rectangle dest, float scaleX, float scaleY, float rotation, float a, float r,
                        float g, float b) {
         Rectangle srcRect = tex.getSrcRect();
-        auto evil = TextureInfo { (uint) tex.getId() };
         elems.push_back(verts.size());
         elems.push_back(verts.size() + 1);
         elems.push_back(verts.size() + 2);

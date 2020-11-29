@@ -35,6 +35,6 @@ namespace engine {
             inline std::vector<UniformInfo>* getUniforms() { return &uniforms; }
             inline UniformInfo getUniform(int i) { return uniforms[i]; }
             inline int getNumUniforms() { return uniforms.size(); }
-            inline GLuint id() { return programID; }
+            [[nodiscard]] inline GLuint id() const { return programID; }
     };
 }
