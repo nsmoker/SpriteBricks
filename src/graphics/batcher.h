@@ -1,3 +1,6 @@
+#ifndef ENGINE_BATCHER_H
+#define ENGINE_BATCHER_H
+
 #include "graphicsDevice.h"
 #include "../math/rectangle.h"
 #include "../texture/Texture.h"
@@ -23,7 +26,7 @@ namespace engine {
                 float rotation;
                 uint tex;
             };
-            GraphicsDevice* _device;
+            GraphicsDevice _device;
             float xOrigin = 0.0f;
             float yOrigin = 0.0f;
             std::vector<Vertex> verts;
@@ -31,8 +34,12 @@ namespace engine {
             Shader shader;
             Material material;
             MeshInfo mesh;
+            Rectangle transRect(Rectangle other);
         public:
+            bool useScreenDimensions = true;
+            Batcher();
             explicit Batcher(GraphicsDevice &device);
+            Batcher& operator=(Batcher const&other);
             // Submit a texture for drawing. Note that this just adds it to the queue, you need to call render to actually make things appear.
             void draw(Texture& tex, Rectangle dest, float scaleX = 1.0f, float scaleY = 1.0f, float rotation = 0, float a = 1.0f,
                       float r = 1.0f, float g = 1.0f, float b = 1.0f);
@@ -40,3 +47,4 @@ namespace engine {
             void render();
     };
 }
+#endif // ENGINE_BATCHER_H

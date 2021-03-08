@@ -1,6 +1,7 @@
 #include "graphicsDevice.h"
 #include <iostream>
 #include <cstdint>
+#include "../math/vec.h"
 
 namespace engine {
 
@@ -96,10 +97,16 @@ namespace engine {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    Vec GraphicsDevice::getViewportSize() {
+        int net[4];
+        glGetIntegerv(GL_VIEWPORT, net);
+        return Vec((float) net[2], (float) net[3]);
+    }
+
     void GraphicsDevice::render(RenderInfo call) {
-        glUseProgram(call.material.shader()->id());
-        for(int i = 0; i < call.material.shader()->getNumUniforms(); ++i) {
-            UniformInfo uni = call.material.shader()-> getUniform(i);
+        glUseProgram(call.material.shader().id());
+        for(int i = 0; i < call.material.shader().getNumUniforms(); ++i) {
+            UniformInfo uni = call.material.shader().getUniform(i);
             switch (uni.tp) {
                 case GL_FLOAT_VEC2:
                     glUniform2fv(uni.loc, uni.arraySize, uni.value.data());

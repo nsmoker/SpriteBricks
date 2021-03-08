@@ -41,10 +41,14 @@ namespace engine {
         }
     )glsl";
 
-    Batcher::Batcher(GraphicsDevice &device) : shader(vertexSource, fragSource), material(&shader, 0) {
-        _device = &device;
+    Batcher::Batcher() : shader(vertexSource, fragSource), material(shader, 0) {
+        mesh = _device.createMesh();
+        mesh.vertSize = 11 * sizeof(float);
+    }
+
+    Batcher::Batcher(GraphicsDevice &device) : shader(vertexSource, fragSource), material(shader, 0), _device(device) {
         verts = std::vector<Vertex>();
-        mesh = _device->createMesh();
+        mesh = _device.createMesh();
         mesh.vertSize = 11 * sizeof(float);
         VertexAttributeInfo atts[] = {
                 VertexAttributeInfo { 2, 0, false},
@@ -53,22 +57,65 @@ namespace engine {
                 VertexAttributeInfo { 4, 6, false},
                 VertexAttributeInfo {1, 11, false}
         };
-        _device->enableAttributes(mesh, atts, 11, 5);
+        _device.enableAttributes(mesh, atts, 11, 5);
     }
 
-    void Batcher::draw(Texture& tex, Rectangle dest, float scaleX, float scaleY, float rotation, float a, float r,
+    Rectangle Batcher::transRect(Rectangle other) {
+        Vec screenSize = _device.getViewportSize();
+        float halfWidth = screenSize.x / 2.0f;
+        float halfHeight = screenSize.y / 2.0f;
+        float retW = other.width() / screenSize.x;
+        float retH = other.height() / screenSize.y;
+        float retX = (other.posX() - halfWidth) / halfWidth;
+        float retY = (halfHeight - other.posY()) / halfHeight;
+        return Rectangle(retW, retH, retX, retY);
+    }
+
+    Batcher& Batcher::operator=(Batcher const&other) {
+        xOrigin = other.xOrigin;
+        yOrigin = other.yOrigin;
+        verts = other.verts;
+        elems = other.elems;
+        shader = other.shader;
+        material = engine::Material(shader, 0);
+        mesh = other.mesh;
+        return *this;
+    }
+
+    void Batcher::draw(Texture& tex, Rectangle destRect, float scaleX, float scaleY, float rotation, float a, float r,
                        float g, float b) {
         Rectangle srcRect = tex.getSrcRect();
+        Rectangle dest = useScreenDimensions ? transRect(destRect) : destRect;
+        if(tex.getId() == -1) tex.upload(_device);
         elems.push_back(verts.size());
         elems.push_back(verts.size() + 1);
         elems.push_back(verts.size() + 2);
         elems.push_back(verts.size() + 1);
         elems.push_back(verts.size() + 2);
         elems.push_back(verts.size() + 3);
-        verts.push_back(Vertex { dest.posX(), dest.posY(), srcRect.top_left().first, srcRect.top_left().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top left
-        verts.push_back(Vertex { dest.posX(), dest.posY() + dest.height(), srcRect.top_left().first, srcRect.bottom_right().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom left
-        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY(), srcRect.bottom_right().first, srcRect.top_left().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top right
-        verts.push_back(Vertex { dest.posX() + dest.width(), dest.posY() + dest.height(), srcRect.bottom_right().first, srcRect.bottom_right().second, scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom right
+        verts.push_back(Vertex {
+            dest.posX(),
+            dest.posY(),
+            srcRect.top_left().first,
+            srcRect.top_left().second,
+            scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top left
+        verts.push_back(Vertex { dest.posX(),
+                                 dest.posY() + dest.height(),
+                                 srcRect.top_left().first,
+                                 srcRect.bottom_right().second,
+                                 scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom left
+        verts.push_back(Vertex {
+            dest.posX() + dest.width(),
+            dest.posY(),
+            srcRect.bottom_right().first,
+            srcRect.top_left().second,
+            scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top right
+        verts.push_back(Vertex {
+            dest.posX() + dest.width(),
+            dest.posY() + dest.height(),
+            srcRect.bottom_right().first,
+            srcRect.bottom_right().second,
+            scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Bottom right
     }
 
     void Batcher::render() {
@@ -90,9 +137,9 @@ namespace engine {
         for(int i = 0; i < verts.size(); ++i) {
             if(tex != -1 && verts[i].tex != tex || i == verts.size() - 1) {
                 material.setTexture(tex);
-                _device->meshVertexData(mesh, &actualData[offset], (i + 1) - offset);
-                _device->meshElementData(mesh, elems.data(), elems.size());
-                _device->render(RenderInfo { mesh, material });
+                _device.meshVertexData(mesh, &actualData[offset], (i + 1) - offset);
+                _device.meshElementData(mesh, elems.data(), elems.size());
+                _device.render(RenderInfo { mesh, material });
                 tex = verts[i].tex;
                 offset = i - 1;
             } else {

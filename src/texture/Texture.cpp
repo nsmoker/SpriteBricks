@@ -2,21 +2,51 @@
 
 namespace engine {
 
-    Texture::Texture(const Texture* that) : srcRect(that->srcRect) {
-        std::atexit(IMG_Quit);
+    Texture::Texture(): srcRect(1, 1, 0, 0) {
+        id = -1;
+    }
+
+    Texture::Texture(SDL_Surface *surface) : srcRect(1, 1, 0, 0) {
+        surf = surface;
+        id = -1;
+    }
+
+    Texture::Texture(const Texture* that): srcRect(that->srcRect) {
         surf = that->surf;
         surf->refcount++;
         id = that->getId();
     }
 
-    Texture::Texture(const char *filePath, GraphicsDevice device): srcRect(1, 1, 0, 0) {
-        surf = IMG_Load(filePath);
-        id = device.uploadTexture(surf->pixels, surf->w, surf->h, surf->format->BytesPerPixel);
+    Texture& Texture::operator=(const Texture *that) {
+        setSrcRect(that->srcRect);
+        surf = that->surf;
+        surf->refcount++;
+        id = that->getId();
+        return *this;
     }
 
-    Texture::Texture(const char *filePath, Rectangle sRect, GraphicsDevice device): srcRect(sRect) {
+    Texture::Texture(const char *filePath): srcRect(1, 1, 0, 0) {
+        std::atexit(IMG_Quit);
         surf = IMG_Load(filePath);
-        id = device.uploadTexture(surf->pixels, surf->w, surf->h, surf->format->BytesPerPixel);
+        id = -1;
+    }
+
+    Texture::Texture(const char* filePath, GraphicsDevice &device): srcRect(1, 1, 0, 0) {
+        std::atexit(IMG_Quit);
+        surf = IMG_Load(filePath);
+        upload(device);
+    }
+
+    Texture::Texture(const char *filePath, Rectangle sRect): srcRect(sRect) {
+        std::atexit(IMG_Quit);
+        surf = IMG_Load(filePath);
+        id = -1;
+    }
+
+    Texture::Texture(const char *filePath, Rectangle sRect, GraphicsDevice &device): srcRect(sRect) {
+        std::atexit(IMG_Quit);
+        surf = IMG_Load(filePath);
+        upload(device);
     }
 
     Texture Texture::subTex(Rectangle sRect) {

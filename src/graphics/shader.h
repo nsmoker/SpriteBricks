@@ -26,13 +26,13 @@ namespace engine {
 
     class Shader {
         private:
-            GLuint programID;
+            GLuint programID{};
             std::vector<ShaderAttributeInfo> attributes;
             std::vector<UniformInfo> uniforms;
         public:
             Shader(const char vertexSource[], const char fragmentSource[]);
             inline std::vector<ShaderAttributeInfo> getAttributes() { return attributes; }
-            inline std::vector<UniformInfo>* getUniforms() { return &uniforms; }
+            inline std::vector<UniformInfo>& getUniforms() { return uniforms; }
             inline UniformInfo getUniform(int i) { return uniforms[i]; }
             inline int getNumUniforms() { return uniforms.size(); }
             [[nodiscard]] inline GLuint id() const { return programID; }

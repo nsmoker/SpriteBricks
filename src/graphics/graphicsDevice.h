@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include "shader.h"
 #include "material.h"
+#include "../math/vec.h"
 
 namespace engine {
     // Information about an OpenGL mesh.
@@ -84,6 +85,8 @@ namespace engine {
 
             // Sets the texture to dest to use type for filtering
             void setTextureFiltering(int tex, GLint filter);
+
+            Vec getViewportSize();
 
             // Render stuff
             void render(RenderInfo call);
