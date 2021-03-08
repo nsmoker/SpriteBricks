@@ -6,7 +6,7 @@
 #include "../math/vec.h"
 
 namespace engine {
-    enum MouseButton { LeftMB, MiddleMB, RightMB, MB4, MB5, MB6, MB7, MB8};
+    enum MouseButton { LeftMB = 1, MiddleMB, RightMB, MB4, MB5, MB6, MB7, MB8};
 
     class InputManager {
         private:

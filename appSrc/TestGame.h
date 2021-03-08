@@ -33,7 +33,7 @@ public:
             playerPos.x = 400;
             playerPos.y = 400;
         }
-        if(input.keyDown(SDL_SCANCODE_M)) {
+        if(input.mouseDown(engine::LeftMB)) {
             playerPos = input.mousePos();
         }
     }
