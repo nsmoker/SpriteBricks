@@ -1,26 +1,40 @@
 #pragma once
 
-class Vec {
+namespace engine {
+    class Vec {
     public:
-    float x;
-    float y;
-    float z;
-    Vec(float vx, float vy, float vz);
-    Vec(float vx, float vy);
-    Vec(float v);
-    Vec();
+        float x;
+        float y;
+        float z;
 
-    float magnitude();
-    float dot(const Vec& other);
+        Vec(float vx, float vy, float vz);
 
-    Vec operator+(const Vec& other);
-    Vec operator+(const float& scalar);
-    Vec operator-(const Vec& other);
-    Vec operator-(const float& scalar);
-    Vec operator*(const Vec& other);
-    Vec operator*(const float& scalar);
-    Vec operator/(const Vec& other);
-    Vec operator/(const float& scalar);
+        Vec(float vx, float vy);
 
-    Vec normalized();
-};
+        Vec(float v);
+
+        Vec();
+
+        float magnitude() const;
+
+        float dot(const Vec &other) const;
+
+        Vec operator+(const Vec &other) const;
+
+        Vec operator+(const float &scalar) const;
+
+        Vec operator-(const Vec &other) const;
+
+        Vec operator-(const float &scalar) const;
+
+        Vec operator*(const Vec &other) const;
+
+        Vec operator*(const float &scalar) const;
+
+        Vec operator/(const Vec &other) const;
+
+        Vec operator/(const float &scalar) const;
+
+        Vec normalized() const;
+    };
+}

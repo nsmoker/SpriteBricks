@@ -9,6 +9,7 @@ namespace engine {
             float _x;
             float _y;
         public:
+            Rectangle();
             Rectangle(float w, float h, float x, float y);
             [[nodiscard]] inline float width() const { return _w; }
             inline void setWidth(float w) { _w = w; }
