@@ -3,7 +3,8 @@
 
 namespace engine {
     void Window::init(int width, int height, const char title[]) {
-        SDL_Init(SDL_INIT_VIDEO);
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK);
+        SDL_JoystickEventState(SDL_ENABLE);
         w = width;
         h = height;
         // Tell SDL we want a reasonably modern context

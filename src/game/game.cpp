@@ -5,7 +5,7 @@
 
 namespace engine {
 
-    Game::Game(int w, int h, const char* t)
+    Game::Game(int w, int h, const char* t): input()
     {
         width = w;
         height = h;
@@ -31,6 +31,12 @@ namespace engine {
                 if(event.type == SDL_QUIT) {
                     done = true;
                     break;
+                } else if(event.type == SDL_CONTROLLERDEVICEADDED) {
+                    int32_t i = event.cdevice.which;
+                    input.addController(i);
+                } else if(event.type == SDL_CONTROLLERDEVICEREMOVED) {
+                    int32_t i = event.cdevice.which;
+                    input.removeController(i);
                 }
             }
             update();
