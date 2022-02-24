@@ -36,15 +36,15 @@ public:
         if(input.mouseDown(engine::LeftMB)) {
             playerPos = input.mousePos();
         }
-        // if(input.ctrlrDown(0, engine::ButtonA)) {
-        //     engine::Vec lStick = engine::Vec(input.ctrlrAxis(engine::LeftX, 0), input.ctrlrAxis(engine::LeftY, 0));
-        //     playerPos.x += 5.0f * lStick.x;
-        //     playerPos.y += 5.0f * lStick.y;
-        // }
-        // if(input.ctrlrPressed(0, engine::ButtonLStick)) {
-        //     playerPos.x = 400.0f;
-        //     playerPos.y = 400.0f;
-        // }
+        if(input.ctrlrDown(0, engine::ButtonA)) {
+            engine::Vec lStick = engine::Vec(input.ctrlrAxis(engine::LeftX, 0), input.ctrlrAxis(engine::LeftY, 0));
+            playerPos.x += 5.0f * lStick.x;
+            playerPos.y += 5.0f * lStick.y;
+        }
+        if(input.ctrlrPressed(0, engine::ButtonLStick)) {
+            playerPos.x = 400.0f;
+            playerPos.y = 400.0f;
+        }
     }
 
     void draw() override {
