@@ -7,7 +7,7 @@ namespace engine {
     class Game 
     {
         public:
-        GraphicsDevice device;
+        GraphicsDevice* device;
         InputManager input;
         Game(int w, int h, const char* title);
         void run();
@@ -15,6 +15,7 @@ namespace engine {
         virtual void update() {}
         virtual void draw() {}
         virtual void exit() {}
+        ~Game();
         private:
         int width;
         int height;

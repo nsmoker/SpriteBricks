@@ -27,14 +27,22 @@ namespace engine {
     class Shader {
         private:
             GLuint programID{};
+            GLuint vertexID;
+            GLuint fragID;
             std::vector<ShaderAttributeInfo> attributes;
             std::vector<UniformInfo> uniforms;
+            void linkProgram(GLuint vertexID, GLuint fragID);
+            GLuint compileSource(const char* source, bool isVertex);
         public:
             Shader(const char vertexSource[], const char fragmentSource[]);
             inline std::vector<ShaderAttributeInfo> getAttributes() { return attributes; }
             inline std::vector<UniformInfo>& getUniforms() { return uniforms; }
             inline UniformInfo getUniform(int i) { return uniforms[i]; }
             inline int getNumUniforms() { return uniforms.size(); }
+            bool hasLinked() const;
+            bool hasCompiled() const;
+            void getShaderProgramLog(char* destination, int size) const;
+            void getShaderCompilationLog(char* vertexShaderDest, char* fragmentShaderDest, int size1, int size2) const;
             [[nodiscard]] inline GLuint id() const { return programID; }
     };
 }

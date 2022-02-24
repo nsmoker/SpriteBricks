@@ -6,7 +6,7 @@
 namespace engine {
 
     void GLAPIENTRY gl_message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-        std::cout << "OpenGL: " << message << std::endl;
+        //SDL_Log("OpenGL: %s \n", message);
     }
 
     void GraphicsDevice::init(SDL_GLContext context) {
@@ -22,7 +22,7 @@ namespace engine {
     void GraphicsDevice::clear(int r, int g, int b, int a) const {
         if(active) {
             glClearColor(r, g, b, a);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         } 
     }
 
@@ -33,7 +33,7 @@ namespace engine {
     }
 
     int GraphicsDevice::uploadTexture(void* data, int width, int height, int bytesPerPixel) {
-        uint id;
+        unsigned int id;
         glGenTextures(1, &id);
         glBindTexture(GL_TEXTURE_2D, id);
         GLint mode = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
@@ -73,11 +73,11 @@ namespace engine {
         glBindVertexArray(mesh.vertArrayID);
         if(mesh.vertBufferID == 0) glGenBuffers(1, &mesh.vertBufferID);
         glBindBuffer(GL_ARRAY_BUFFER, mesh.vertBufferID);
-        ulong compsInBytes = 0;
+        unsigned long compsInBytes = 0;
         for(int i = 0; i < numAttribs; ++i) {
             VertexAttributeInfo vert = attribs[i];
             glEnableVertexAttribArray(i);
-            glVertexAttribPointer(i, vert.numComponents, GL_FLOAT, vert.normalized, mesh.vertSize, (void * ) compsInBytes);
+            glVertexAttribPointer(i, vert.numComponents, GL_FLOAT, vert.normalized, mesh.vertSize, (void * ) (std::intptr_t) compsInBytes);
             compsInBytes += vert.numComponents * sizeof(float);
         }
         glBindVertexArray(0);

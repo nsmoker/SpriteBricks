@@ -24,6 +24,8 @@ find_package(OpenGL REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2TTF REQUIRED)
 
+add_definitions(-DGLEW_STATIC)
+
 target_include_directories(engine PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
     "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${SDL2_IMAGE_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${SDL2TTF_INCLUDE_DIRS}>"

@@ -24,9 +24,9 @@ namespace engine {
                 float b;
                 float a;
                 float rotation;
-                uint tex;
+                unsigned int tex;
             };
-            GraphicsDevice _device;
+            GraphicsDevice *_device;
             float xOrigin = 0.0f;
             float yOrigin = 0.0f;
             std::vector<Vertex> verts;
@@ -38,7 +38,7 @@ namespace engine {
         public:
             bool useScreenDimensions = true;
             Batcher();
-            explicit Batcher(GraphicsDevice &device);
+            explicit Batcher(GraphicsDevice *device);
             Batcher& operator=(Batcher const&other);
             // Submit a texture for drawing. Note that this just adds it to the queue, you need to call render to actually make things appear.
             void draw(Texture& tex, Rectangle dest, float scaleX = 1.0f, float scaleY = 1.0f, float rotation = 0, float a = 1.0f,

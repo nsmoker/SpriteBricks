@@ -35,7 +35,9 @@ namespace engine {
 
     void Window::vSync() { SDL_GL_SetSwapInterval(1); }
 
-    void Window::swap() { SDL_GL_SwapWindow(window); }
+    void Window::swap() { 
+        SDL_GL_SwapWindow(window); 
+    }
 
     void Window::sleep(int t) { SDL_Delay(t); }
 

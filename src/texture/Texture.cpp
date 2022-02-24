@@ -31,9 +31,13 @@ namespace engine {
         id = -1;
     }
 
-    Texture::Texture(const char* filePath, GraphicsDevice &device): srcRect(1, 1, 0, 0) {
-        std::atexit(IMG_Quit);
+    Texture::Texture(const char* filePath, GraphicsDevice *device): srcRect(1, 1, 0, 0) {
         surf = IMG_Load(filePath);
+        surf->refcount++;
+        if (!surf) {
+            const char* error = IMG_GetError();
+            SDL_Log("Error uploading texture: %s\n", error);
+        }
         upload(device);
     }
 
@@ -43,7 +47,7 @@ namespace engine {
         id = -1;
     }
 
-    Texture::Texture(const char *filePath, Rectangle sRect, GraphicsDevice &device): srcRect(sRect) {
+    Texture::Texture(const char *filePath, Rectangle sRect, GraphicsDevice *device): srcRect(sRect) {
         std::atexit(IMG_Quit);
         surf = IMG_Load(filePath);
         upload(device);

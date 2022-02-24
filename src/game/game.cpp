@@ -13,9 +13,8 @@ namespace engine {
         window.init(width, height, title);
         window.createContext();
 
-        GraphicsDevice device;
-        device.init(window.getContext());
-        this->device = device;
+        device = new GraphicsDevice();
+        device->init(window.getContext());
     }
 
     void Game::run()
@@ -47,5 +46,9 @@ namespace engine {
 
         exit();
         window.quit();
+    }
+
+    Game::~Game() {
+        delete device;
     }
 }

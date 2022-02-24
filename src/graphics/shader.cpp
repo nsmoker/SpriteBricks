@@ -1,21 +1,54 @@
 #include "shader.h"
 
 namespace engine {
-    Shader::Shader(const char vertexSource[], const char fragmentSource[]) {
-        GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    bool Shader::hasLinked() const {
+        GLint linkageStatus;
+        glGetProgramiv(programID, GL_LINK_STATUS, &linkageStatus);
+        return linkageStatus == GL_TRUE;
+    }
 
-        glShaderSource(vertexShader, 1, &vertexSource, nullptr);
-        glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
+    bool Shader::hasCompiled() const {
+        GLint compileStatusVertex;
+        GLint compileStatusFrag;
+        glGetShaderiv(vertexID, GL_COMPILE_STATUS, &compileStatusVertex);
+        glGetShaderiv(fragID, GL_COMPILE_STATUS, &compileStatusFrag);
+        return compileStatusVertex == GL_TRUE && compileStatusFrag == GL_TRUE;
+    }
 
-        glCompileShader(vertexShader);
-        glCompileShader(fragmentShader);
+    void Shader::getShaderProgramLog(char* destination, int size) const {
+        GLsizei logLength = 0;
+        glGetProgramInfoLog(programID, size, &logLength, destination);
+    }
 
+    void Shader::getShaderCompilationLog(char* vertexShaderDest, char* fragmentShaderDest, int size1, int size2) const {
+        GLsizei logLength = 0;
+        glGetShaderInfoLog(vertexID, size1, &logLength, vertexShaderDest);
+        glGetShaderInfoLog(fragID, size2, &logLength, fragmentShaderDest);
+    }
+
+    void Shader::linkProgram(GLuint vertexID, GLuint fragID) {
         programID = glCreateProgram();
-        glAttachShader(programID, vertexShader);
-        glAttachShader(programID, fragmentShader);
+        glAttachShader(programID, vertexID);
+        glAttachShader(programID, fragID);
 
         glLinkProgram(programID);
+
+        GLint linkageStatus;
+        glGetProgramiv(programID, GL_LINK_STATUS, &linkageStatus);
+    }
+
+    GLuint Shader::compileSource(const char* source, bool isVertex) {
+        GLuint shaderID = glCreateShader(isVertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+        glShaderSource(shaderID, 1, &source, nullptr);
+        glCompileShader(shaderID);
+        return shaderID;
+    }
+
+    Shader::Shader(const char vertexSource[], const char fragmentSource[]) {
+        vertexID = compileSource(vertexSource, true);
+        fragID = compileSource(fragmentSource, false);
+
+        linkProgram(vertexID, fragID);
 
         // Get the attributes
         GLint numAttribs; 

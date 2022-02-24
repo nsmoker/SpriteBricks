@@ -3,7 +3,7 @@
 #define CTRLR_BTNS 15
 #define AXIS_MAX 32767
 
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #include <vector>
 #include <map>
 #include <iostream>
