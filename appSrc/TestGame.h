@@ -43,9 +43,9 @@ public:
         engine::Rectangle playerRectangle(128, 128, playerPos.x, playerPos.y);
         engine::Rectangle opponentRectangle(128, 128, 600, 600);
         device.clear(0, 0, 0, 1);
-        batcher.draw(tex, playerRectangle);
-        batcher.draw(otherTex, opponentRectangle);
-        batcher.render();
+        batcher->draw(tex, playerRectangle);
+        batcher->draw(otherTex, opponentRectangle);
+        batcher->render();
     }
 };
 

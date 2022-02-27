@@ -5,12 +5,6 @@
 
 namespace engine {
 
-    template <class T>
-    Game& Game::instance() {
-        static Game* current = new T();
-        return *current;
-    }
-
     void Game::setWindowSize(int w, int h) {
         width = w;
         height = h;
@@ -40,6 +34,7 @@ namespace engine {
         window.init(width, height, title);
         window.createContext();
         device.init(window.getContext());
+        batcher = new Batcher(&device);
 
         init();
 
@@ -65,6 +60,7 @@ namespace engine {
         }
 
         exit();
+        delete batcher;
         window.quit();
     }
 }

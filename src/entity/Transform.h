@@ -10,6 +10,10 @@ namespace engine {
             engine::Vec scale;
             engine::Vec rotationEuler;
         public:
+            void init(Entity& entity) {}
+            void update(Entity& entity) {}
+            void atDraw(Entity& entity) {}
+
             inline engine::Vec getPosition() const { return position; }
 
             inline engine::Vec getScale() const { return scale; }
