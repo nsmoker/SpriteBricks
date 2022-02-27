@@ -8,11 +8,12 @@ using namespace engine;
 int main(int argv, char** argc) {
     std::cout << "Entered main" << std::endl;
 
-    TestGame game(1280, 720, "Test");
+    Game::instance<TestGame>().setWindowSize(1280, 720);
+    Game::instance<TestGame>().setTitle("Test");
 
     std::cout << "Prepared game loop" << std::endl;
 
-    game.run();
+    Game::instance<TestGame>().run();
 
     return EXIT_SUCCESS;
 }

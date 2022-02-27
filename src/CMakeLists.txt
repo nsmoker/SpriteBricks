@@ -10,6 +10,10 @@ add_library(engine
     graphics/material.cpp
     graphics/batcher.cpp
     graphics/batcher.h
+    entity/Entity.h
+    entity/Entity.cpp
+    entity/Component.h
+    entity/Transform.h
         math/rectangle.cpp
         math/rectangle.h
         math/vec.cpp

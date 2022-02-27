@@ -6,23 +6,39 @@
 #include <graphics/batcher.h>
 #include <math/rectangle.h>
 #include <math/vec.h>
-#include "SDL.h"
+#include <entity/Entity.h>
+#include "SpriteRenderer.h"
+#include <entity/Transform.h>
 
 class TestGame : public engine::Game {
 private:
-    engine::Texture tex;
-    engine::Batcher batcher;
-    engine::Vec playerPos = engine::Vec(400, 400);
+    engine::Texture spriteSheet;
+    engine::Texture playerTex;
+    engine::Texture otherTex;
+    engine::Entity player;
 public:
     using engine::Game::Game;
 
     void init() override {
-        tex = engine::Texture("sprites.png", device);
-        device->setTextureFiltering(tex.getId(), GL_NEAREST);
-        batcher = engine::Batcher(device);
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].init();
+        }
+        spriteSheet = engine::Texture("sprites.png", &device);
+        playerTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
+        otherTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 1 / 16.0f, 0));
+        device.setTextureFiltering(playerTex.getId(), GL_NEAREST);
+        player.addComponent<SpriteRenderer>()->setSprite(playerTex);
+        auto playerTrans = player.getComponent<engine::Transform>();
+        playerTrans->setPosition(400, 400);
+        playerTrans->setScale(200, 200);
+        addEntity(player);
     }
 
     void update() override {
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].update();
+        }
+        engine::Vec playerPos = player.getComponent<engine::Transform>()->getPosition();
         if(input.keyDown(SDL_SCANCODE_D)) {
             playerPos.x += 5;
         }
@@ -36,23 +52,17 @@ public:
         if(input.mouseDown(engine::LeftMB)) {
             playerPos = input.mousePos();
         }
-        if(input.ctrlrDown(0, engine::ButtonA)) {
-            engine::Vec lStick = engine::Vec(input.ctrlrAxis(engine::LeftX, 0), input.ctrlrAxis(engine::LeftY, 0));
-            playerPos.x += 5.0f * lStick.x;
-            playerPos.y += 5.0f * lStick.y;
-        }
-        if(input.ctrlrPressed(0, engine::ButtonLStick)) {
-            playerPos.x = 400.0f;
-            playerPos.y = 400.0f;
-        }
+
+        player.getComponent<engine::Transform>()->setPosition(playerPos);
     }
 
     void draw() override {
-        engine::Rectangle rectangle(128, 128, playerPos.x, playerPos.y);
-        glViewport(0, 0, 1280, 720);
-        device->clear(0, 0, 0, 1);
-        batcher.draw(tex, rectangle);
-        batcher.render();
+        engine::Rectangle opponentRectangle(128, 128, 600, 600);
+        device.clear(0, 0, 0, 1);
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].atDraw();
+        }
+        batcher->render();
     }
 };
 

@@ -5,28 +5,43 @@
 
 namespace engine {
 
-    Game::Game(int w, int h, const char* t): input()
-    {
+    void Game::setWindowSize(int w, int h) {
         width = w;
         height = h;
-        title = t;
-        window.init(width, height, title);
-        window.createContext();
-
-        device = new GraphicsDevice();
-        device->init(window.getContext());
     }
 
-    void Game::run()
-    {
+    void Game::addEntity(Entity &entity) {
+        entity.setId(entities.size());
+        entities.push_back(entity);
+    }
+
+    Entity* Game::getEntityOfId(int id) {
+        if (entities.size() <= id) {
+            SDL_Log("Warning: no entity of id %i present.", id);
+            return nullptr;
+        }
+
+        Entity& entity = entities[id];
+        if (entity.getId() != id) {
+            SDL_Log("Warning: no entity of id %i present.", id);
+            return nullptr;
+        }
+
+        return &entity;
+    }
+
+    void Game::run() {
+        window.init(width, height, title);
+        window.createContext();
+        device.init(window.getContext());
+        batcher = new Batcher(&device);
+
         init();
 
         SDL_Event event;
         bool done = false;
-        while(!done) 
-        {
-            while(SDL_PollEvent(&event) != 0)
-            {
+        while(!done) {
+            while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     done = true;
                     break;
@@ -45,10 +60,7 @@ namespace engine {
         }
 
         exit();
+        delete batcher;
         window.quit();
-    }
-
-    Game::~Game() {
-        delete device;
     }
 }
