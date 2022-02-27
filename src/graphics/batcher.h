@@ -1,5 +1,4 @@
-#ifndef ENGINE_BATCHER_H
-#define ENGINE_BATCHER_H
+#pragma once
 
 #include "graphicsDevice.h"
 #include "../math/rectangle.h"
@@ -47,4 +46,3 @@ namespace engine {
             void render();
     };
 }
-#endif // ENGINE_BATCHER_H

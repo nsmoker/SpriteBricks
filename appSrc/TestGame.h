@@ -1,5 +1,4 @@
-#ifndef ENGINE_TESTGAME_H
-#define ENGINE_TESTGAME_H
+#pragma once
 
 #include <game/game.h>
 #include <texture/Texture.h>
@@ -51,6 +50,3 @@ public:
         batcher->render();
     }
 };
-
-
-#endif //ENGINE_TESTGAME_H
