@@ -31,13 +31,13 @@ namespace engine {
             virtual void draw() {}
             virtual void exit() {}
         private:
-            std::vector<Entity> entities;
-            int width;
-            int height;
             const char* title;
             Window window;
         protected:
             Game(): device(), input() {}
+            std::vector<Entity> entities;
+            int width;
+            int height;
     };
 
     template <class T>

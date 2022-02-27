@@ -4,7 +4,7 @@
 #include <math/vec.h>
 
 namespace engine {
-    class Transform : private Component {
+    class Transform : public Component {
         private: 
             engine::Vec position;
             engine::Vec scale;

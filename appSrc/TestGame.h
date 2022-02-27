@@ -6,24 +6,39 @@
 #include <graphics/batcher.h>
 #include <math/rectangle.h>
 #include <math/vec.h>
+#include <entity/Entity.h>
+#include "SpriteRenderer.h"
+#include <entity/Transform.h>
 
 class TestGame : public engine::Game {
 private:
     engine::Texture spriteSheet;
-    engine::Texture tex;
+    engine::Texture playerTex;
     engine::Texture otherTex;
-    engine::Vec playerPos = engine::Vec(400, 400);
+    engine::Entity player;
 public:
     using engine::Game::Game;
 
     void init() override {
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].init();
+        }
         spriteSheet = engine::Texture("sprites.png", &device);
-        tex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
+        playerTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
         otherTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 1 / 16.0f, 0));
-        device.setTextureFiltering(tex.getId(), GL_NEAREST);
+        device.setTextureFiltering(playerTex.getId(), GL_NEAREST);
+        player.addComponent<SpriteRenderer>()->setSprite(playerTex);
+        auto playerTrans = player.getComponent<engine::Transform>();
+        playerTrans->setPosition(400, 400);
+        playerTrans->setScale(200, 200);
+        addEntity(player);
     }
 
     void update() override {
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].update();
+        }
+        engine::Vec playerPos = player.getComponent<engine::Transform>()->getPosition();
         if(input.keyDown(SDL_SCANCODE_D)) {
             playerPos.x += 5;
         }
@@ -37,14 +52,16 @@ public:
         if(input.mouseDown(engine::LeftMB)) {
             playerPos = input.mousePos();
         }
+
+        player.getComponent<engine::Transform>()->setPosition(playerPos);
     }
 
     void draw() override {
-        engine::Rectangle playerRectangle(128, 128, playerPos.x, playerPos.y);
         engine::Rectangle opponentRectangle(128, 128, 600, 600);
         device.clear(0, 0, 0, 1);
-        batcher->draw(tex, playerRectangle);
-        batcher->draw(otherTex, opponentRectangle);
+        for (int i = 0; i < entities.size(); ++i) {
+            entities[i].atDraw();
+        }
         batcher->render();
     }
 };
