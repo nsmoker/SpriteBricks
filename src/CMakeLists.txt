@@ -15,6 +15,8 @@ add_library(engine
     entity/Component.h
     entity/Transform.h
     external/stb_image.h
+    entity/Transform.cpp
+    external/json.hpp
         math/rectangle.cpp
         math/rectangle.h
         math/vec.cpp
@@ -26,7 +28,6 @@ cmake_policy(SET CMP0072 NEW)
 find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(SDL2TTF REQUIRED)
 
 add_definitions(-DGLEW_STATIC)
 

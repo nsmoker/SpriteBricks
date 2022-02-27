@@ -70,10 +70,10 @@ namespace engine {
         Vec screenSize = _device->getViewportSize();
         float halfWidth = screenSize.x / 2.0f;
         float halfHeight = screenSize.y / 2.0f;
-        float retW = other.width() / screenSize.x;
-        float retH = other.height() / screenSize.y;
-        float retX = (other.posX() - halfWidth) / halfWidth;
-        float retY = (halfHeight - other.posY()) / halfHeight;
+        float retW = other.w / screenSize.x;
+        float retH = other.h / screenSize.y;
+        float retX = (other.x - halfWidth) / halfWidth;
+        float retY = (halfHeight - other.y) / halfHeight;
         return Rectangle(retW, retH, retX, retY);
     }
 
@@ -90,7 +90,7 @@ namespace engine {
 
     void Batcher::draw(Texture& tex, Rectangle destRect, float scaleX, float scaleY, float rotation, float a, float r,
                        float g, float b) {
-        Rectangle srcRect = tex.getSrcRect();
+        Rectangle srcRect = tex.srcRect;
         Rectangle dest = useScreenDimensions ? transRect(destRect) : destRect;
         if(tex.getId() == -1) tex.upload(_device);
         elems.push_back(verts.size());
@@ -100,25 +100,25 @@ namespace engine {
         elems.push_back(verts.size() + 2);
         elems.push_back(verts.size() + 3);
         verts.push_back(Vertex {
-            dest.posX(),
-            dest.posY(),
+            dest.x,
+            dest.y,
             srcRect.top_left().first,
             srcRect.top_left().second,
             scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top left
-        verts.push_back(Vertex { dest.posX(),
-                                 dest.posY() + dest.height(),
+        verts.push_back(Vertex { dest.x,
+                                 dest.y + dest.h,
                                  srcRect.top_left().first,
                                  srcRect.bottom_right().second,
                                  scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Bottom left
         verts.push_back(Vertex {
-            dest.posX() + dest.width(),
-            dest.posY(),
+            dest.x + dest.w,
+            dest.y,
             srcRect.bottom_right().first,
             srcRect.top_left().second,
             scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Top right
         verts.push_back(Vertex {
-            dest.posX() + dest.width(),
-            dest.posY() + dest.height(),
+            dest.x + dest.w,
+            dest.y + dest.h,
             srcRect.bottom_right().first,
             srcRect.bottom_right().second,
             scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Bottom right

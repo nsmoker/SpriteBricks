@@ -3,6 +3,7 @@
 #include <vector>
 #include "Component.h"
 #include "game/game.h"
+#include <external/json.hpp>
 
 namespace engine {
     class Entity {
@@ -11,6 +12,7 @@ namespace engine {
             std::vector<Component*> components;
         public:
             Entity();
+            inline std::vector<Component*> getComponents() const { return components; }
             inline void init() {
                 for (int i = 0; i < components.size(); ++i) {
                     components[i]->init(*this);
@@ -58,4 +60,6 @@ namespace engine {
 
             ~Entity();
     };
+
+    void to_json(nlohmann::json& j, const Entity& entity);
 }

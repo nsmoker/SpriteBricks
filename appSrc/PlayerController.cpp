@@ -4,7 +4,7 @@
 #include <input/InputManager.h>
 
 void PlayerController::update(engine::Entity& entity) {
-    engine::Vec playerPos = entity.getComponent<engine::Transform>()->getPosition();
+    engine::Vec playerPos = entity.getComponent<engine::Transform>()->position;
     engine::InputManager& input = engine::Game::instance<TestGame>().input;
     if(input.keyDown(SDL_SCANCODE_D)) {
         playerPos.x += 5;
@@ -20,5 +20,5 @@ void PlayerController::update(engine::Entity& entity) {
         playerPos = input.mousePos();
     }
 
-    entity.getComponent<engine::Transform>()->setPosition(playerPos);
+    entity.getComponent<engine::Transform>()->position = playerPos;
 }

@@ -1,15 +1,25 @@
 #include "SpriteRenderer.h"
 #include <entity/Transform.h>
 #include "TestGame.h"
+#include <external/json.hpp>
+
+void to_json(nlohmann::json& j, const SpriteRenderer& spriteRenderer) {
+    j = nlohmann::json{{"sprite", spriteRenderer.sprite}, {"bounds", spriteRenderer.bounds}, {"offset", spriteRenderer.offset}};
+}
+
+void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer) {
+    j.at("sprite").get_to(spriteRenderer.sprite);
+    j.at("bounds").get_to(spriteRenderer.bounds);
+    j.at("offset").get_to(spriteRenderer.offset);
+}
 
 void SpriteRenderer::syncBoundsWithParentTrans(engine::Entity& entity) {
     engine::Transform* trans = entity.getComponent<engine::Transform>();
-    engine::Vec position = trans->getPosition() + offset;
-    engine::Vec scale = trans->getScale();
-    bounds.setX(position.x);
-    bounds.setY(position.y);
-    bounds.setWidth(scale.x);
-    bounds.setHeight(scale.y);
+    engine::Vec position = trans->position + offset;
+    bounds.x = position.x;
+    bounds.y = position.y;
+    bounds.w = trans->scale.x;
+    bounds.h = trans->scale.y;
 }
 
 void SpriteRenderer::init(engine::Entity& entity) {
@@ -21,20 +31,24 @@ void SpriteRenderer::update(engine::Entity& entity) {
 }
 
 void SpriteRenderer::atDraw(engine::Entity& entity) {
-    engine::Game::instance<TestGame>().batcher->draw(*tex, bounds);
+    engine::Game::instance<TestGame>().batcher->draw(sprite, bounds);
 }
 
 void SpriteRenderer::moveBounds(engine::Vec offset) {
-    bounds.setX(bounds.posX() + offset.x);
-    bounds.setY(bounds.posY() + offset.y);
+    bounds.x = bounds.x + offset.x;
+    bounds.y = bounds.y + offset.y;
 }
 
 void SpriteRenderer::setBoundsSize(engine::Vec newSize) {
-    bounds.setHeight(newSize.y);
-    bounds.setWidth(newSize.x);
+    bounds.h = newSize.y;
+    bounds.w = newSize.x;
 }
 
 void SpriteRenderer::setBoundsSize(float x, float y) {
-    bounds.setHeight(y);
-    bounds.setWidth(x);
+    bounds.h = y;
+    bounds.w = x;
+}
+
+void SpriteRenderer::serialize(nlohmann::json& j) {
+    to_json(j, *this);
 }

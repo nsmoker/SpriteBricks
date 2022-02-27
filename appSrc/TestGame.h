@@ -10,6 +10,7 @@
 #include "SpriteRenderer.h"
 #include "PlayerController.h"
 #include <entity/Transform.h>
+#include <external/json.hpp>
 
 class TestGame : public engine::Game {
 private:
@@ -28,7 +29,7 @@ public:
         playerTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
         otherTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 1 / 16.0f, 0));
         device.setTextureFiltering(playerTex.getId(), GL_NEAREST);
-        player.addComponent<SpriteRenderer>()->setSprite(playerTex);
+        player.addComponent<SpriteRenderer>()->sprite = playerTex;
         player.addComponent<PlayerController>();
         auto playerTrans = player.getComponent<engine::Transform>();
         playerTrans->setPosition(400, 400);

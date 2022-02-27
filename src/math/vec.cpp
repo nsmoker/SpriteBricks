@@ -1,7 +1,20 @@
 #include "vec.h"
 #include <cmath>
+#include "../external/json.hpp"
 
 namespace engine {
+    using json = nlohmann::json;
+
+    void to_json(json& j, const Vec& vec) {
+        j = json{{"x", vec.x}, {"y", vec.y}, {"z", vec.z}};
+    }
+
+    void from_json(const json& j, Vec& vec) {
+        j.at("x").get_to(vec.x);
+        j.at("y").get_to(vec.y);
+        j.at("z").get_to(vec.z);
+    }
+
     Vec::Vec(float vx, float vy, float vz) {
         x = vx;
         y = vy;

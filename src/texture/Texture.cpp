@@ -1,11 +1,22 @@
 #include "Texture.h"
 #include "SDL_log.h"
 #include <stdexcept>
+#include "../external/json.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <external/stb_image.h>
 
 namespace engine {
+    using json = nlohmann::json;
+
+    void to_json(json &j, const Texture& texture) {
+        j = json{{"srcRect", texture.srcRect}, {"path", texture.path}};
+    }
+
+    void from_json(const json &j, Texture& texture) {
+        j.at("srcRect").get_to(texture.srcRect);
+        j.at("path").get_to(texture.path);
+    }
 
     void Texture::loadImage(const char* filePath) {
         imageData.reset(stbi_load(filePath, &width, &height, &numChannels, 0));
@@ -51,7 +62,8 @@ namespace engine {
 
     Texture Texture::subTex(Rectangle sRect) {
         Texture ret(this);
-        ret.setSrcRect(sRect);
+        ret.path = path;
+        ret.srcRect = sRect;
         return ret;
     }
 

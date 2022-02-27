@@ -1,5 +1,7 @@
 #pragma once
 
+#include <external/json.hpp>
+
 namespace engine {
     class Vec {
     public:
@@ -37,4 +39,8 @@ namespace engine {
 
         Vec normalized() const;
     };
+
+    using json = nlohmann::json;
+    void to_json(json& j, const Vec& vec);
+    void from_json(const json& j, Vec& vec);
 }
