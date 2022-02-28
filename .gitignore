@@ -4,3 +4,14 @@ bin
 .metals
 cmake-build-debug
 .idea
+CMakeCache.txt
+CMakeFiles
+*.vcxproj*
+*.swp
+.vs
+*~
+cmake_install.cmake
+*.sln
+*.dir
+*/Debug
+x64/
