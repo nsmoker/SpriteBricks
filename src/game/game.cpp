@@ -2,6 +2,9 @@
 #include "../graphics/window.h"
 #include "../graphics/graphicsDevice.h"
 #include "../graphics/batcher.h"
+#include <external/dear_imgui/imgui.h>
+#include <external/dear_imgui/imgui_impl_sdl.h>
+#include <external/dear_imgui/imgui_impl_opengl3.h>
 
 namespace engine {
 
@@ -32,7 +35,6 @@ namespace engine {
 
     void Game::run() {
         window.init(width, height, title);
-        window.createContext();
         device.init(window.getContext());
         batcher = new Batcher(&device);
 
@@ -42,6 +44,7 @@ namespace engine {
         bool done = false;
         while(!done) {
             while(SDL_PollEvent(&event) != 0) {
+                ImGui_ImplSDL2_ProcessEvent(&event);
                 if(event.type == SDL_QUIT) {
                     done = true;
                     break;
@@ -54,8 +57,13 @@ namespace engine {
                 }
             }
             update();
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplSDL2_NewFrame();
+            ImGui::NewFrame();
             draw();
             input.update();
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
             window.swap();
         }
 

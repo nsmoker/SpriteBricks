@@ -1,5 +1,8 @@
 #include "window.h"
 #include <iostream>
+#include <external/dear_imgui/imgui.h>
+#include <external/dear_imgui/imgui_impl_sdl.h>
+#include <external/dear_imgui/imgui_impl_opengl3.h>
 
 namespace engine {
     void Window::init(int width, int height, const char title[]) {
@@ -24,6 +27,13 @@ namespace engine {
 
 
         window = SDL_CreateWindow(title, 100, 100, w, h, SDL_WINDOW_OPENGL);
+        createContext();
+
+        ImGui::CreateContext();
+        ImGui::StyleColorsDark();
+        ImGui_ImplSDL2_InitForOpenGL(window, ctx);
+        ImGui_ImplOpenGL3_Init("#version 150");
+
     }
 
     void Window::captureMouse() { SDL_CaptureMouse(SDL_TRUE); }
@@ -42,6 +52,9 @@ namespace engine {
     void Window::sleep(int t) { SDL_Delay(t); }
 
     void Window::quit() {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
         SDL_DestroyWindow(window);
         SDL_GL_DeleteContext(ctx);
         SDL_Quit();

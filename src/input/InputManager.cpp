@@ -1,5 +1,8 @@
 #include "InputManager.h"
 #include <cmath>
+#include <external/dear_imgui/imgui.h>
+#include <external/dear_imgui/imgui_impl_sdl.h>
+#include <external/dear_imgui/imgui_impl_opengl3.h>
 
 namespace engine {
     InputManager::InputManager() {
@@ -27,7 +30,12 @@ namespace engine {
     }
 
     void InputManager::update() {
-        memcpy(oldState, kbState, numKeys * sizeof(Uint8));
+        if(ImGui::GetIO().WantCaptureKeyboard) {
+            useOldState = true;
+        } else {
+            useOldState = false;
+            memcpy(oldState, kbState, numKeys * sizeof(Uint8));
+        }
         for(int i = 0; i < MAX_CONTROLLERS; ++i) {
             if(SDL_IsGameController(i))  {
                 for(int j = 0; j < CTRLR_BTNS; ++j) {
@@ -36,7 +44,7 @@ namespace engine {
             }
         }
         oldMouseState = mouseState;
-        mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+        if (!ImGui::GetIO().WantCaptureMouse) mouseState = SDL_GetMouseState(&mouseX, &mouseY);
         SDL_PumpEvents();
     }
     bool InputManager::addController(int32_t jsi) {
@@ -75,7 +83,7 @@ namespace engine {
         float ret_ax = (float) ax / (float) AXIS_MAX;
         return abs(ret_ax) < ctrlrDeadzone ? 0.0f : ret_ax;
     }
-    bool InputManager::keyDown(SDL_Keycode key) { return kbState[key]; }
+    bool InputManager::keyDown(SDL_Keycode key) { return useOldState ? oldState[key] : kbState[key]; }
     bool InputManager::keyPressed(SDL_Keycode key) { return kbState[key] && !oldState[key]; }
     bool InputManager::keyReleased(SDL_Keycode key) { return !kbState[key] && oldState[key]; }
     bool InputManager::keyHeld(SDL_Keycode key) { return kbState[key] && oldState[key]; }

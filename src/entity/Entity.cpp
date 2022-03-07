@@ -4,10 +4,13 @@
 
 namespace engine {
     void to_json(nlohmann::json& j, const Entity& entity) {
+        auto jsonArray = json::array();
+        j["decorator"] = "entity";
         std::vector<Component*> comps = entity.getComponents();
         for (int i = 0; i < comps.size(); ++i) {
-            comps[i]->serialize(j);
+            jsonArray.push_back(comps[i]->serialize());
         }
+        j["components"] = jsonArray;
     }
 
     Entity::Entity(): id(-1) {

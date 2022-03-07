@@ -10,6 +10,7 @@ add_library(engine
     graphics/material.cpp
     graphics/batcher.cpp
     graphics/batcher.h
+    editor/Editor.h
     entity/Entity.h
     entity/Entity.cpp
     entity/Component.h
@@ -17,6 +18,22 @@ add_library(engine
     external/stb_image.h
     entity/Transform.cpp
     external/json.hpp
+    external/dear_imgui/imgui_demo.cpp
+    external/dear_imgui/imgui_draw.cpp
+    external/dear_imgui/imgui_impl_opengl3.cpp
+    external/dear_imgui/imgui_impl_opengl3.h
+    external/dear_imgui/imgui_impl_sdl.cpp
+    external/dear_imgui/imgui_impl_sdl.h
+    external/dear_imgui/imgui_internal.h
+    external/dear_imgui/imgui_tables.cpp
+    external/dear_imgui/imgui_widgets.cpp
+    external/dear_imgui/imgui.cpp
+    external/dear_imgui/imgui.h
+    external/dear_imgui/imconfig.h
+    external/dear_imgui/imgui_impl_opengl3_loader.h
+    external/dear_imgui/imstb_rectpack.h
+    external/dear_imgui/imstb_textedit.h
+    external/dear_imgui/imstb_truetype.h
         math/rectangle.cpp
         math/rectangle.h
         math/vec.cpp

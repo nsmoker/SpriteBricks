@@ -4,6 +4,7 @@ namespace engine {
 
     void to_json(nlohmann::json& j, const Transform& transform) {
         j = nlohmann::json{{"position", transform.position}, {"scale", transform.scale}, {"rotation", transform.rotationEuler}};
+        j["decorator"] = "transform";
     }
 
     void from_json(const nlohmann::json& j, Transform& transform) {
@@ -12,6 +13,10 @@ namespace engine {
         j.at("rotation").get_to(transform.rotationEuler);
     }
 
-    void Transform::serialize(nlohmann::json& j) { to_json(j, *this); }
-
+    std::string Transform::serialize() { 
+        auto j = nlohmann::json();
+        j["decorator"] = "transform";
+        to_json(j, *this);
+        return j.dump();
+     }
 }

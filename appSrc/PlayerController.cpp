@@ -2,6 +2,7 @@
 #include <entity/Transform.h>
 #include "TestGame.h"
 #include <input/InputManager.h>
+#include <external/json.hpp>
 
 void PlayerController::update(engine::Entity& entity) {
     engine::Vec playerPos = entity.getComponent<engine::Transform>()->position;
@@ -21,4 +22,10 @@ void PlayerController::update(engine::Entity& entity) {
     }
 
     entity.getComponent<engine::Transform>()->position = playerPos;
+}
+
+std::string PlayerController::serialize() {
+    nlohmann::json j;
+    j["decorator"] = "PlayerController";
+    return j.dump();
 }

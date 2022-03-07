@@ -48,7 +48,7 @@ namespace engine {
                 rotationEuler.y = y;
             }
 
-            void serialize(nlohmann::json& j);
+            std::string serialize();
     };
 
     void from_json(const nlohmann::json& j, Transform& transform);

@@ -21,7 +21,7 @@ class SpriteRenderer : public engine::Component {
         void setBoundsSize(engine::Vec newSize);
         void setBoundsSize(float x, float y);
 
-        void serialize(nlohmann::json& j);
+        std::string serialize();
 };
 
 void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer);

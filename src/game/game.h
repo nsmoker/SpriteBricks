@@ -12,6 +12,7 @@ namespace engine {
             GraphicsDevice device;
             InputManager input;
             Batcher* batcher;
+            std::vector<Entity> entities;
 
             Game(Game const&) = delete;
             void operator=(Game const&) = delete;
@@ -35,7 +36,6 @@ namespace engine {
             Window window;
         protected:
             Game(): device(), input() {}
-            std::vector<Entity> entities;
             int width;
             int height;
     };

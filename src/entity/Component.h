@@ -1,5 +1,6 @@
 #pragma once
 #include <external/json.hpp>
+#include <string>
 
 namespace engine {
     class Entity;
@@ -9,6 +10,8 @@ namespace engine {
             virtual void init(Entity& entity) {}
             virtual void update(Entity& entity) {}
             virtual void atDraw(Entity& entity) {}
-            virtual void serialize(nlohmann::json& j) {}
+            virtual std::string serialize() = 0;
+            virtual void drawEditor() {}
+            virtual ~Component() {};
     };
 }

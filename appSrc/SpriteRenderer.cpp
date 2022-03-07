@@ -5,6 +5,7 @@
 
 void to_json(nlohmann::json& j, const SpriteRenderer& spriteRenderer) {
     j = nlohmann::json{{"sprite", spriteRenderer.sprite}, {"bounds", spriteRenderer.bounds}, {"offset", spriteRenderer.offset}};
+    j["decorator"] = "spriterenderer";
 }
 
 void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer) {
@@ -49,6 +50,9 @@ void SpriteRenderer::setBoundsSize(float x, float y) {
     bounds.w = x;
 }
 
-void SpriteRenderer::serialize(nlohmann::json& j) {
+std::string SpriteRenderer::serialize() {
+    nlohmann::json j;
     to_json(j, *this);
+    j["decorator"] = "SpriteRenderer";
+    return j.dump();
 }

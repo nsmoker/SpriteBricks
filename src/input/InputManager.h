@@ -28,6 +28,7 @@ namespace engine {
             int mouseY;
             int numControllers = 0;
             bool oldControllers[MAX_CONTROLLERS * CTRLR_BTNS];
+            bool useOldState = false;
             SDL_GameController* controllers[MAX_CONTROLLERS];
         public:
             float ctrlrDeadzone = 0.2f;
