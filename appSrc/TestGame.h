@@ -46,30 +46,12 @@ public:
     }
 
     void draw() override {
-        SpriteRenderer* playerRenderer = player->getComponent<SpriteRenderer>();
-        engine::Transform* transform = player->getComponent<engine::Transform>();
-        float playerColumn = playerRenderer->sprite.srcRect.x * 16.0f;
-        float playerRow = playerRenderer->sprite.srcRect.y * 16.0f;
-        std::string path = playerRenderer->sprite.path;
         std::string scenePath = "scene.json";
         scenePath.resize(512);
         static bool done = false;
         static char buf[50];
-        if (!done) {
-            for (int i = 0; i < 50; ++i) buf[i] = '\0';
-            path.copy(buf, path.size(), 0);
-        }
-        done = true;
 
-        ImGui::Begin("Player texture editor");
-        ImGui::InputFloat("Column", &playerColumn);
-        ImGui::InputFloat("Row", &playerRow);
-        ImGui::InputFloat("Player x", &transform->position.x);
-        ImGui::InputFloat("Player y", &transform->position.y);
-        ImGui::InputText("Path", buf, IM_ARRAYSIZE(buf));
-        if (ImGui::Button("Load from path")) {
-            playerRenderer->sprite = engine::Texture(buf, &device);
-        }
+        ImGui::Begin("Test Window");
 
         ImGui::InputText("Scene path", scenePath.data(), 512 * sizeof(char));
 
@@ -81,14 +63,10 @@ public:
             editor.loadFromScene(scenePath);
         }
 
-        playerRenderer->sprite.srcRect.x = playerColumn / 16.0f;
-        playerRenderer->sprite.srcRect.y = playerRow / 16.0f;
-
         ImGui::End();
 
         //ImGui::ShowDemoWindow();
 
-        engine::Rectangle opponentRectangle(128, 128, 600, 600);
         device.clear(0, 0, 0, 1);
 
         for (int i = 0; i < entities.size(); ++i) {
