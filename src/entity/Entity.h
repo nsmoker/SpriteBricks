@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Component.h"
+#include "SDL_log.h"
 #include "game/game.h"
 #include <external/json.hpp>
 
@@ -11,55 +12,53 @@ namespace engine {
             int id;
             std::vector<Component*> components;
         public:
-            Entity();
+            inline const static std::string componentArrayDecorator = "Component";
+            inline const static std::string jObjectDecorator = "Entity";
+
+            Entity() {}
             inline std::vector<Component*> getComponents() const { return components; }
-            inline void init() {
-                for (int i = 0; i < components.size(); ++i) {
-                    components[i]->init(*this);
-                }
-            }
+            void init();
 
-            inline void update() {
-                for (int i = 0; i < components.size(); ++i) {
-                    components[i]->update(*this);
-                }
-            }
+            void update();
 
-            inline void atDraw() {
-                for (int i = 0; i < components.size(); ++i) {
-                    components[i]->atDraw(*this);
-                }
-            }
+            void atDraw();
 
             inline int getId() const { return id; };
             inline void setId(int _id) { id = _id; }
 
             template <class T>
-            T* getComponent() {
-                for (int i = 0; i < components.size(); ++i) {
-                    Component* component = components[i];
-                    if (dynamic_cast<T*>(component) != nullptr) {
-                        return dynamic_cast<T*>(component);
-                    }
-                }
-
-                return nullptr;
-            }
+            T* getComponent();
 
             template <class T>
-            T* addComponent() {
-                T* component = new T();
-                if (!std::is_base_of<Component, T>::value) {
-                    SDL_Log("Warning: ignoring addition of component of type %s because it is not a component type. Returned nullptr.", typeid(component).name());
-                    return nullptr;
-                } else {
-                    components.push_back(component);
-                    return component;
-                }
-            }
+            T& addComponent();
 
             ~Entity();
     };
+
+    template <class T>
+    T* Entity::getComponent() {
+        for (int i = 0; i < components.size(); ++i) {
+            Component* component = components[i];
+            if (dynamic_cast<T*>(component) != nullptr) {
+                return dynamic_cast<T*>(component);
+            }
+        }
+
+        return nullptr;
+    }
+
+    template <class T>
+    T& Entity::addComponent() {
+        T* component = new T();
+        if (!std::is_base_of<Component, T>::value) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "Ignoring addition of component of type %s because it is not a component type. Returned reference is invalid.", typeid(component).name());
+            return *component;
+        } else {
+            components.push_back(component);
+            return *component;
+        }
+    }
 
     void to_json(nlohmann::json& j, const Entity& entity);
 }

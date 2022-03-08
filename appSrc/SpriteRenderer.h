@@ -1,5 +1,6 @@
 #pragma once
 
+#include "game/game.h"
 #include <entity/Entity.h>
 #include <texture/Texture.h>
 #include <math/vec.h>
@@ -21,8 +22,11 @@ class SpriteRenderer : public engine::Component {
         void setBoundsSize(engine::Vec newSize);
         void setBoundsSize(float x, float y);
 
-        std::string serialize();
+        const inline static std::string jObjectDecorator = "SpriteRenderer";
+
+        nlohmann::json serialize();
+
+        static void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer);
 };
 
-void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer);
 void to_json(nlohmann::json& j, const SpriteRenderer& spriteRenderer);

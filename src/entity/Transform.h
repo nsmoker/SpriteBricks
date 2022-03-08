@@ -7,6 +7,8 @@
 namespace engine {
     class Transform : public Component {
         public:
+            inline const static std::string jObjectDecorator = "Transform";
+
             void init(Entity& entity) {}
             void update(Entity& entity) {}
             void atDraw(Entity& entity) {}
@@ -48,9 +50,13 @@ namespace engine {
                 rotationEuler.y = y;
             }
 
-            std::string serialize();
+            nlohmann::json serialize();
+            static void from_json(const nlohmann::json& j, Transform& transform) {
+                j.at("position").get_to(transform.position);
+                j.at("scale").get_to(transform.scale);
+                j.at("rotation").get_to(transform.rotationEuler);
+            }
     };
 
-    void from_json(const nlohmann::json& j, Transform& transform);
     void to_json(nlohmann::json& j, const Transform& transform);
 }

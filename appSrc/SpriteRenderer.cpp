@@ -1,15 +1,17 @@
 #include "SpriteRenderer.h"
 #include <entity/Transform.h>
-#include "TestGame.h"
 #include <external/json.hpp>
+#include "TestGame.h"
+#include "game/game.h"
 
 void to_json(nlohmann::json& j, const SpriteRenderer& spriteRenderer) {
     j = nlohmann::json{{"sprite", spriteRenderer.sprite}, {"bounds", spriteRenderer.bounds}, {"offset", spriteRenderer.offset}};
-    j["decorator"] = "spriterenderer";
+    j["decorator"] = SpriteRenderer::jObjectDecorator;
 }
 
-void from_json(const nlohmann::json& j, SpriteRenderer& spriteRenderer) {
+void SpriteRenderer::from_json(const nlohmann::json &j, SpriteRenderer &spriteRenderer) {
     j.at("sprite").get_to(spriteRenderer.sprite);
+    spriteRenderer.sprite.upload(&engine::Game::instance<TestGame>().device);
     j.at("bounds").get_to(spriteRenderer.bounds);
     j.at("offset").get_to(spriteRenderer.offset);
 }
@@ -28,10 +30,10 @@ void SpriteRenderer::init(engine::Entity& entity) {
 }
 
 void SpriteRenderer::update(engine::Entity& entity) {
-    syncBoundsWithParentTrans(entity);
 }
 
 void SpriteRenderer::atDraw(engine::Entity& entity) {
+    syncBoundsWithParentTrans(entity);
     engine::Game::instance<TestGame>().batcher->draw(sprite, bounds);
 }
 
@@ -50,9 +52,9 @@ void SpriteRenderer::setBoundsSize(float x, float y) {
     bounds.w = x;
 }
 
-std::string SpriteRenderer::serialize() {
+nlohmann::json SpriteRenderer::serialize() {
     nlohmann::json j;
     to_json(j, *this);
-    j["decorator"] = "SpriteRenderer";
-    return j.dump();
+    j["decorator"] = jObjectDecorator;
+    return j;
 }

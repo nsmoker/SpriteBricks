@@ -12,7 +12,7 @@ namespace engine {
             GraphicsDevice device;
             InputManager input;
             Batcher* batcher;
-            std::vector<Entity> entities;
+            std::vector<Entity*> entities;
 
             Game(Game const&) = delete;
             void operator=(Game const&) = delete;
@@ -22,8 +22,10 @@ namespace engine {
             void setWindowSize(int w, int h);
             inline void setTitle(const char* newTitle) { title = newTitle; };
 
-            void addEntity(Entity& entity);
+            void addEntity(Entity* entity);
             Entity* getEntityOfId(int id);
+
+            void clearEntities();
 
             void run();
 
@@ -31,6 +33,7 @@ namespace engine {
             virtual void update() {}
             virtual void draw() {}
             virtual void exit() {}
+            ~Game();
         private:
             const char* title;
             Window window;

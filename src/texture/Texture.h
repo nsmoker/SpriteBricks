@@ -6,31 +6,38 @@
 #include <string>
 
 namespace engine {
+
     class Texture {
        private:
             std::shared_ptr<unsigned char> imageData;
-            int id;
+            unsigned int id;
             int width;
             int height;
             int numChannels;
             GraphicsDevice* _device;
 
-            void loadImage(const char* filePath);
+            void loadImage(std::string filePath);
        public:
-            Rectangle srcRect;
+            TextureFiltering textureFiltering = Nearest;
             std::string path;
+            Rectangle srcRect;
 
             Texture();
-            Texture(const char* filePath);
-            Texture(const char* filePath, GraphicsDevice *device);
-            Texture(const char* filePath, Rectangle sRect);
-            Texture(const char *filePath, Rectangle sRect, GraphicsDevice *device);
+            Texture(std::string filePath);
+            Texture(std::string filePath, GraphicsDevice *device);
+            Texture(std::string filePath, Rectangle sRect);
+            Texture(std::string filePath, Rectangle sRect, GraphicsDevice *device);
+            void loadFromPath(std::string filePath);
             explicit Texture(const Texture* that);
             Texture& operator=(const Texture* that);
-            inline void setSrcRect(Rectangle srcRectP) { srcRect = srcRectP; }
-            inline void upload(GraphicsDevice *device) { id = device->uploadTexture(static_cast<void*>(imageData.get()), width, height, numChannels); }
+            inline void upload(GraphicsDevice *device) {
+                 id = device->uploadTexture(imageData.get(), width, height, numChannels);
+                 device->setTextureFiltering(id, textureFiltering);
+                 _device = device;
+            }
             Texture subTex(Rectangle sRect);
             [[nodiscard]] inline unsigned int getId() const { return id; }
+            void unload();
             ~Texture();
     };
 

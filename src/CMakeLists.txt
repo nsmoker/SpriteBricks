@@ -60,4 +60,5 @@ target_link_libraries(engine PUBLIC
     ${SDL2TTF_LIBRARY}
     ${GLEW_LIBRARIES}
     ${OPENGL_LIBRARIES}
+    ${CMAKE_DL_LIBS}
 )

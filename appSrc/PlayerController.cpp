@@ -4,6 +4,12 @@
 #include <input/InputManager.h>
 #include <external/json.hpp>
 
+namespace engine {
+    void to_json(nlohmann::json &j, const PlayerController &playerController) {
+        j["decorator"] = PlayerController::jObjectDecorator;
+    }
+}
+
 void PlayerController::update(engine::Entity& entity) {
     engine::Vec playerPos = entity.getComponent<engine::Transform>()->position;
     engine::InputManager& input = engine::Game::instance<TestGame>().input;
@@ -24,8 +30,8 @@ void PlayerController::update(engine::Entity& entity) {
     entity.getComponent<engine::Transform>()->position = playerPos;
 }
 
-std::string PlayerController::serialize() {
+nlohmann::json PlayerController::serialize() {
     nlohmann::json j;
-    j["decorator"] = "PlayerController";
-    return j.dump();
+    j["decorator"] = jObjectDecorator;
+    return j;
 }

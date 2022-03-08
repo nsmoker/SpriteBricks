@@ -13,8 +13,8 @@ namespace engine {
         height = h;
     }
 
-    void Game::addEntity(Entity &entity) {
-        entity.setId(entities.size());
+    void Game::addEntity(Entity *entity) {
+        entity->setId(entities.size());
         entities.push_back(entity);
     }
 
@@ -24,13 +24,20 @@ namespace engine {
             return nullptr;
         }
 
-        Entity& entity = entities[id];
-        if (entity.getId() != id) {
+        Entity* entity = entities[id];
+        if (entity->getId() != id) {
             SDL_Log("Warning: no entity of id %i present.", id);
             return nullptr;
         }
 
-        return &entity;
+        return entity;
+    }
+
+    void Game::clearEntities() {
+        for (auto p : entities) {
+            delete p;
+        }
+        entities.clear();
     }
 
     void Game::run() {
@@ -70,5 +77,14 @@ namespace engine {
         exit();
         delete batcher;
         window.quit();
+    }
+
+    Game::~Game() {
+        for (auto p : entities) {
+            delete p;
+        }
+
+        delete batcher;
+        delete title;
     }
 }

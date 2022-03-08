@@ -9,6 +9,10 @@
 #include "../math/vec.h"
 
 namespace engine {
+    enum TextureFiltering {
+          Nearest = GL_NEAREST, Linear = GL_LINEAR
+    };
+
     // Information about an OpenGL mesh.
     struct MeshInfo {
         // ID of the vertex array associated with the mesh

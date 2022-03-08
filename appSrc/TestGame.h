@@ -18,40 +18,36 @@
 
 class TestGame : public engine::Game {
 private:
-    engine::Texture spriteSheet;
-    engine::Texture playerTex;
-    engine::Texture otherTex;
-    engine::Entity player;
-    engine::Editor<TestGame> editor = engine::Editor<TestGame>::getInstance();
+    engine::Entity* player;
+    engine::Editor<TestGame>& editor = engine::Editor<TestGame>::getInstance();
 public:
     using engine::Game::Game;
 
+    void addDecorators() {
+        editor.registerDecorator(SpriteRenderer::jObjectDecorator, &engine::addComponentOfType<SpriteRenderer>);
+        editor.registerDecorator(PlayerController::jObjectDecorator, &engine::addComponentOfType<PlayerController>);
+    }
+
     void init() override {
+        addDecorators();
+
         for (int i = 0; i < entities.size(); ++i) {
-            entities[i].init();
+            entities[i]->init();
         }
-        spriteSheet = engine::Texture((std::filesystem::current_path() / "appSrc/res/sprites.png").c_str(), &device);
-        playerTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
-        otherTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 1 / 16.0f, 0));
-        device.setTextureFiltering(playerTex.getId(), GL_NEAREST);
-        player.addComponent<SpriteRenderer>()->sprite = playerTex;
-        player.addComponent<PlayerController>();
-        auto playerTrans = player.getComponent<engine::Transform>();
-        playerTrans->setPosition(400, 400);
-        playerTrans->setScale(200, 200);
-        addEntity(player);
-        nlohmann::json js;
-        to_json(js, player);
+        editor.loadFromScene((std::filesystem::current_path() / "appSrc/res/scene.json").c_str());
+
+        player = getEntityOfId(0);
     }
 
     void update() override {
         for (int i = 0; i < entities.size(); ++i) {
-            entities[i].update();
+            entities[i]->update();
         }
     }
 
     void draw() override {
-        SpriteRenderer* playerRenderer = player.getComponent<SpriteRenderer>();
+        SpriteRenderer* playerRenderer = player->getComponent<SpriteRenderer>();
+        engine::Transform* transform = player->getComponent<engine::Transform>();
         float playerColumn = playerRenderer->sprite.srcRect.x * 16.0f;
         float playerRow = playerRenderer->sprite.srcRect.y * 16.0f;
         std::string path = playerRenderer->sprite.path;
@@ -68,6 +64,8 @@ public:
         ImGui::Begin("Player texture editor");
         ImGui::InputFloat("Column", &playerColumn);
         ImGui::InputFloat("Row", &playerRow);
+        ImGui::InputFloat("Player x", &transform->position.x);
+        ImGui::InputFloat("Player y", &transform->position.y);
         ImGui::InputText("Path", buf, IM_ARRAYSIZE(buf));
         if (ImGui::Button("Load from path")) {
             playerRenderer->sprite = engine::Texture(buf, &device);
@@ -77,6 +75,10 @@ public:
 
         if (ImGui::Button("Save scene")) {
             editor.saveScene(scenePath);
+        }
+
+        if (ImGui::Button("Load scene")) {
+            editor.loadFromScene(scenePath);
         }
 
         playerRenderer->sprite.srcRect.x = playerColumn / 16.0f;
@@ -90,7 +92,7 @@ public:
         device.clear(0, 0, 0, 1);
 
         for (int i = 0; i < entities.size(); ++i) {
-            entities[i].atDraw();
+            entities[i]->atDraw();
         }
         batcher->render();
     }
