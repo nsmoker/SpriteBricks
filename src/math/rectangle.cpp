@@ -31,11 +31,10 @@ namespace engine {
     }
 
     bool Rectangle::intersects(const Rectangle &other) const {
-        bool isBelow = other.top_left().y > bottom_right().y;
-        bool isAbove = top_left().y > other.bottom_right().y;
+        bool isAbove = other.top_left().y < bottom_right().y;
+        bool isBelow = other.bottom_right().y > top_left().y;
         bool isLeft = other.bottom_right().x < top_left().x;
         bool isRight = other.top_left().x > bottom_right().x;
-        bool ret = !((isBelow && isLeft) || (isBelow && isRight) || (isAbove && isLeft) || (isAbove && isRight));
-        return ret;
+        return !(isAbove || isBelow || isRight || isLeft);
     }
 }

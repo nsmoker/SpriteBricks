@@ -15,7 +15,10 @@ namespace engine {
 
     void from_json(const json &j, Texture& texture) {
         j.at("srcRect").get_to(texture.srcRect);
-        texture.loadFromPath(j.at("path").get<std::string>());
+        std::string path = j.at("path");
+        if (!path.empty()) {
+            texture.loadFromPath(path);
+        }
     }
 
     void Texture::loadFromPath(std::string filePath) {
@@ -33,8 +36,12 @@ namespace engine {
         }
     }
 
-    Texture::Texture(): srcRect(1, 1, 0, 0) {
+    Texture::Texture(): srcRect(1, 1, 0, 0), width(1), height(1), numChannels(4) {
         id = -1;
+        imageData.reset(new unsigned char[16]);
+        for (int i = 0; i < 16; ++i) {
+            imageData.get()[i] = 255;
+        }
     }
 
     Texture::Texture(const Texture* that): srcRect(that->srcRect) {

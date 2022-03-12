@@ -15,6 +15,8 @@ class SpriteRenderer : public engine::Component {
         engine::Rectangle bounds;
         engine::Vec offset;
         engine::Vec scale;
+        // The color to be blended with the texture when the sprite is rendered.
+        engine::Vec color = engine::Vec(1.0f, 1.0f, 1.0f);
         void init(engine::Entity& entity);
         void update(engine::Entity& entity);
         void atDraw(engine::Entity& entity);

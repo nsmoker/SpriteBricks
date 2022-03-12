@@ -39,6 +39,12 @@ namespace engine {
         z = 0.0f;
     }
 
+    void Vec::set(float _x, float _y, float _z) {
+        x = _x;
+        y = _y;
+        z = _z;
+    }
+
     float Vec::magnitude() const {
         return sqrtf(x * x + y * y + z * z);
     }

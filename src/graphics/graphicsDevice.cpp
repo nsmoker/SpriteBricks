@@ -6,7 +6,8 @@
 namespace engine {
 
     void GLAPIENTRY gl_message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-        //SDL_Log("OpenGL: %s \n", message);
+        if (severity > GL_DEBUG_SEVERITY_NOTIFICATION)
+            SDL_Log("OpenGL: %s \n", message);
     }
 
     void GraphicsDevice::init(SDL_GLContext context) {
@@ -60,7 +61,7 @@ namespace engine {
         glBindVertexArray(0);
     }
 
-    void GraphicsDevice::meshInstanceData(MeshInfo mesh, float data[], GLuint count) {
+    void GraphicsDevice::meshInstanceData(MeshInfo &mesh, float data[], GLuint count) {
         glBindVertexArray(mesh.vertArrayID);
         if(mesh.instBufferID == 0) glGenBuffers(1, &mesh.instBufferID);
         mesh.numInstances = count;

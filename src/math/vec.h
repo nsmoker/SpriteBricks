@@ -17,6 +17,8 @@ namespace engine {
 
         Vec();
 
+        void set(float _x, float _y, float _z);
+
         float magnitude() const;
 
         float dot(const Vec &other) const;

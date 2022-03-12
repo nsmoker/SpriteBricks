@@ -5,6 +5,7 @@
 #include <external/dear_imgui/imgui.h>
 #include <external/dear_imgui/imgui_impl_sdl.h>
 #include <external/dear_imgui/imgui_impl_opengl3.h>
+#include <entity/Transform.h>
 
 namespace engine {
 
@@ -15,6 +16,12 @@ namespace engine {
 
     void Game::addEntity(Entity *entity) {
         entity->setId(entities.size());
+        if (!entity->getComponent<Transform>()) {
+            entity->addComponent<Transform>();
+            Transform* trans = entity->getComponent<Transform>();
+            trans->setPosition(width / 2., height / 2., 0);
+            trans->setScale(width / 10., height / 10.);
+        }
         entities.push_back(entity);
     }
 

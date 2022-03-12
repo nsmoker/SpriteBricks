@@ -35,7 +35,7 @@ namespace engine {
 
         void main()
         {
-            outColor = vec4((texture(samp, Tex) * Color).xyz, 1.0);
+            outColor = texture(samp, Tex) * Color;
         }
     )glsl";
 
@@ -145,11 +145,11 @@ namespace engine {
         for(int i = 0; i < verts.size(); ++i) {
             if(tex != -1 && verts[i].tex != tex || i == verts.size() - 1) {
                 material.setTexture(tex);
-                _device->meshVertexData(mesh, &actualData[offset], (i + 1) - offset);
+                _device->meshVertexData(mesh, &actualData[offset * 11], (i + 1) - offset);
                 _device->meshElementData(mesh, elems.data(), elems.size());
                 _device->render(RenderInfo { mesh, material });
                 tex = verts[i].tex;
-                offset = i - 1;
+                offset = i;
             } else {
                 tex = verts[i].tex;
             }

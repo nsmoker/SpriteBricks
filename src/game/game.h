@@ -22,7 +22,7 @@ namespace engine {
             void setWindowSize(int w, int h);
             inline void setTitle(const char* newTitle) { title = newTitle; };
 
-            void addEntity(Entity* entity);
+            virtual void addEntity(Entity* entity);
             Entity* getEntityOfId(int id);
 
             void clearEntities();

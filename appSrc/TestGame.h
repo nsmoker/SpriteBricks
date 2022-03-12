@@ -18,10 +18,19 @@
 
 class TestGame : public engine::Game {
 private:
-    engine::Entity* player;
     engine::Editor<TestGame>& editor = engine::Editor<TestGame>::getInstance();
 public:
     using engine::Game::Game;
+
+    void addEntity(engine::Entity* entity) override {
+        engine::Game::addEntity(entity);
+        if (!entity->getComponent<SpriteRenderer>()) {
+            SpriteRenderer& spriteRenderer = entity->addComponent<SpriteRenderer>();
+            spriteRenderer.color = engine::Vec(1., 1., 1.);
+            spriteRenderer.scale = engine::Vec(width / 10.0f, height / 10.0f);
+
+        }
+    }
 
     void addDecorators() {
         editor.registerDecorator(SpriteRenderer::jObjectDecorator, &engine::addComponentOfType<SpriteRenderer>);
@@ -36,7 +45,6 @@ public:
         }
         editor.loadFromScene((std::filesystem::current_path() / "scene.json").c_str());
 
-        player = getEntityOfId(0);
     }
 
     void update() override {

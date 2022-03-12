@@ -37,7 +37,7 @@ void SpriteRenderer::update(engine::Entity& entity) {
 }
 
 void SpriteRenderer::atDraw(engine::Entity& entity) {
-    engine::Game::instance<TestGame>().batcher->draw(sprite, bounds);
+    engine::Game::instance<TestGame>().batcher->draw(sprite, bounds, 1., 1., 0, 1, color.x, color.y, color.z);
 }
 
 void SpriteRenderer::moveBounds(engine::Vec offset) {

@@ -80,7 +80,7 @@ namespace engine {
             void meshElementData(MeshInfo &mesh, GLuint data[], GLuint count);
 
             // Assign data to mesh's instance buffers. If the buffers do not yet exist, generates them.
-            void meshInstanceData(MeshInfo mesh, float data[], GLuint count);
+            void meshInstanceData(MeshInfo &mesh, float data[], GLuint count);
 
             // Activate vertex attributes
             void enableAttributes(MeshInfo& mesh, VertexAttributeInfo attribs[], GLuint vertSize, GLuint numAttribs);

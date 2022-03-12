@@ -37,6 +37,7 @@ namespace engine {
             std::map<std::string, std::function<void(Entity&, nlohmann::json&)>> decoratorFactoryMap;
             Entity* selectedEntity;
             char currentSceneFileNameBuffer[512];
+            char entityNameBuffer[512];
             std::string currentSceneFileName;
             bool startedOnSelected = false;
             bool entityDragged = false;
@@ -70,7 +71,9 @@ namespace engine {
         ImGui::Begin("Entity Inspector");
 
         if (selectedEntity) {
-            ImGui::Text("%s", selectedEntity->name.c_str());
+            if (ImGui::InputText("##entityName", entityNameBuffer, 512)) {
+                selectedEntity->name.assign(entityNameBuffer);
+            }
             for (auto component : selectedEntity->getComponents()) {
                 component->drawEditor();
                 ImGui::Separator();
@@ -92,6 +95,8 @@ namespace engine {
         baseFlags |= ImGuiWindowFlags_NoScrollbar;
         baseFlags |= ImGuiWindowFlags_NoCollapse;
 
+        Game& game = Game::instance<T>();
+
         auto io = ImGui::GetIO();
 
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
@@ -100,13 +105,16 @@ namespace engine {
         if (ImGui::InvisibleButton("baseButton", ImVec2(io.DisplaySize.x, io.DisplaySize.y))) {
             if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
                 engine::Vec mousePosition = ImGui::GetMousePos();
+                bool foundHit = false;
                 for (Entity* entity : Game::instance<T>().entities) {
                     Transform* trans = entity->getComponent<Transform>();
                     if (trans->bounding.contains(mousePosition)) {
                         selectedEntity = entity;
-                    } else {
-                        selectedEntity = nullptr;
+                        foundHit = true;
                     }
+                }
+                if (!foundHit) {
+                    selectedEntity = nullptr;
                 }
                 entityDragged = false;
             }
@@ -157,6 +165,14 @@ namespace engine {
                     } else {
                         saveScene(currentSceneFileName);
                     }
+                }
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Edit")) {
+                if (ImGui::MenuItem("Add Entity")) {
+                    Entity* toAdd = new Entity("Entity" + std::to_string(game.entities.size()));
+                    game.addEntity(toAdd);
                 }
                 ImGui::EndMenu();
             }
