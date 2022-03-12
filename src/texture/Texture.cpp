@@ -54,4 +54,8 @@ namespace engine {
         ret.setSrcRect(sRect);
         return ret;
     }
+
+    Texture::~Texture() {
+        _device->deleteTexture(id);
+    }
 }

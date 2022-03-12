@@ -13,6 +13,7 @@ namespace engine {
             int width;
             int height;
             int numChannels;
+            GraphicsDevice* _device;
 
             void loadImage(const char* filePath);
        public:
@@ -28,5 +29,6 @@ namespace engine {
             Texture subTex(Rectangle sRect);
             [[nodiscard]] inline unsigned int getId() const { return id; }
             inline Rectangle getSrcRect() const { return srcRect; }
+            ~Texture();
     };
 }
