@@ -14,6 +14,7 @@ add_library(engine
     entity/Entity.cpp
     entity/Component.h
     entity/Transform.h
+    external/stb_image.h
         math/rectangle.cpp
         math/rectangle.h
         math/vec.cpp
