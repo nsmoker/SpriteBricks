@@ -27,7 +27,9 @@ namespace engine {
     template <class T>
     void addComponentOfType(Entity& entity, nlohmann::json& j) {
         T& comp = entity.addComponent<T>();
-        T::from_json(j, comp);
+        if (!j.is_null()) {
+            T::from_json(j, comp);
+        }
     }
 
     template <class T>
@@ -173,10 +175,22 @@ namespace engine {
                 if (ImGui::MenuItem("Add Entity")) {
                     Entity* toAdd = new Entity("Entity" + std::to_string(game.entities.size()));
                     game.addEntity(toAdd);
+                    selectedEntity = toAdd;
+                }
+
+                if (selectedEntity && ImGui::BeginMenu("Add component")) {
+                    for (auto& pair : decoratorFactoryMap) {
+                        if (ImGui::MenuItem(pair.first.c_str())) {
+                            nlohmann::json j;
+                            pair.second(*selectedEntity, j);
+                        }
+                    }
+                    ImGui::EndMenu();
                 }
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
+
         }
         if (openSceneInputPopup) {
             ImGui::OpenPopup(sceneInputId);

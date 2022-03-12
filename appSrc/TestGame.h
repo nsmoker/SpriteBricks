@@ -15,6 +15,7 @@
 #include <external/dear_imgui/imgui_impl_sdl.h>
 #include <external/dear_imgui/imgui_impl_opengl3.h>
 #include <editor/Editor.h>
+#include "nyoom.h"
 
 class TestGame : public engine::Game {
 private:
@@ -35,6 +36,7 @@ public:
     void addDecorators() {
         editor.registerDecorator(SpriteRenderer::jObjectDecorator, &engine::addComponentOfType<SpriteRenderer>);
         editor.registerDecorator(PlayerController::jObjectDecorator, &engine::addComponentOfType<PlayerController>);
+        editor.registerDecorator(Nyoom::jObjectDecorator, &engine::addComponentOfType<Nyoom>);
     }
 
     void init() override {
