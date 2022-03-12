@@ -1,5 +1,6 @@
 #pragma once
 
+#include "math/rectangle.h"
 #include <entity/Component.h>
 #include <math/vec.h>
 #include <external/json.hpp>
@@ -10,12 +11,19 @@ namespace engine {
             inline const static std::string jObjectDecorator = "Transform";
 
             void init(Entity& entity) {}
-            void update(Entity& entity) {}
+            void update(Entity& entity) {
+                bounding.x = position.x;
+                bounding.y = position.y;
+                bounding.h = scale.y;
+                bounding.w = scale.x;
+            }
             void atDraw(Entity& entity) {}
             
             engine::Vec position;
             engine::Vec scale;
             engine::Vec rotationEuler;
+
+            engine::Rectangle bounding;
 
             inline void setPosition(float x, float y, float z) { 
                 position.x = x;
@@ -56,6 +64,8 @@ namespace engine {
                 j.at("scale").get_to(transform.scale);
                 j.at("rotation").get_to(transform.rotationEuler);
             }
+
+            void drawEditor();
     };
 
     void to_json(nlohmann::json& j, const Transform& transform);

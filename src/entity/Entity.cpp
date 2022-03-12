@@ -26,6 +26,7 @@ namespace engine {
     void to_json(nlohmann::json& j, const Entity& entity) {
         auto jsonArray = json::array();
         j["decorator"] = Entity::jObjectDecorator;
+        j["Name"] = entity.name;
         std::vector<Component*> comps = entity.getComponents();
         for (int i = 0; i < comps.size(); ++i) {
             jsonArray.push_back(comps[i]->serialize());

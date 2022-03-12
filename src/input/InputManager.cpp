@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "SDL_keyboard.h"
 #include <cmath>
 #include <external/dear_imgui/imgui.h>
 #include <external/dear_imgui/imgui_impl_sdl.h>
@@ -30,11 +31,13 @@ namespace engine {
     }
 
     void InputManager::update() {
-        if(ImGui::GetIO().WantCaptureKeyboard) {
+        if(ImGui::GetIO().WantTextInput || ImGui::GetIO().WantCaptureKeyboard) {
             useOldState = true;
+            kbState = oldState;
         } else {
             useOldState = false;
             memcpy(oldState, kbState, numKeys * sizeof(Uint8));
+            kbState = SDL_GetKeyboardState(&numKeys);
         }
         for(int i = 0; i < MAX_CONTROLLERS; ++i) {
             if(SDL_IsGameController(i))  {
@@ -83,7 +86,7 @@ namespace engine {
         float ret_ax = (float) ax / (float) AXIS_MAX;
         return abs(ret_ax) < ctrlrDeadzone ? 0.0f : ret_ax;
     }
-    bool InputManager::keyDown(SDL_Keycode key) { return useOldState ? oldState[key] : kbState[key]; }
+    bool InputManager::keyDown(SDL_Keycode key) { return kbState[key]; }
     bool InputManager::keyPressed(SDL_Keycode key) { return kbState[key] && !oldState[key]; }
     bool InputManager::keyReleased(SDL_Keycode key) { return !kbState[key] && oldState[key]; }
     bool InputManager::keyHeld(SDL_Keycode key) { return kbState[key] && oldState[key]; }

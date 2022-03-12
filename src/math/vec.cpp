@@ -57,6 +57,20 @@ namespace engine {
         return ret;
     }
 
+    Vec& Vec::operator+=(const Vec &other) {
+        this->x += other.x;
+        this->y += other.y;
+        this->z += other.z;
+        return *this;
+    }
+
+    Vec& Vec::operator+=(const float& other) {
+        this->x += other;
+        this->y += other;
+        this->z += other;
+        return *this;
+    }
+
     Vec Vec::operator-(const Vec &other) const {
         Vec ret(x - other.x, y - other.y, z - other.z);
         return ret;
@@ -65,6 +79,20 @@ namespace engine {
     Vec Vec::operator-(const float &scalar) const {
         Vec ret(x - scalar, y - scalar, z - scalar);
         return ret;
+    }
+
+    Vec& Vec::operator-=(const Vec &other) {
+        this->x -= other.x;
+        this->y -= other.y;
+        this->z -= other.z;
+        return *this;
+    }
+
+    Vec& Vec::operator-=(const float& other) {
+        this->x -= other;
+        this->y -= other;
+        this->z -= other;
+        return *this;
     }
 
     Vec Vec::operator*(const Vec &other) const {
@@ -77,6 +105,20 @@ namespace engine {
         return ret;
     }
 
+    Vec& Vec::operator*=(const Vec &other) {
+        this->x *= other.x;
+        this->y *= other.y;
+        this->z *= other.z;
+        return *this;
+    }
+
+    Vec& Vec::operator*=(const float& other) {
+        this->x *= other;
+        this->y *= other;
+        this->z *= other;
+        return *this;
+    }
+
     Vec Vec::operator/(const Vec &other) const {
         Vec ret(x / other.x, y / other.y, z / other.z);
         return ret;
@@ -85,6 +127,20 @@ namespace engine {
     Vec Vec::operator/(const float &scalar) const {
         Vec ret(x / scalar, y / scalar, z / scalar);
         return ret;
+    }
+
+    Vec& Vec::operator/=(const Vec &other) {
+        this->x /= other.x;
+        this->y /= other.y;
+        this->z /= other.z;
+        return *this;
+    }
+
+    Vec& Vec::operator/=(const float& other) {
+        this->x /= other;
+        this->y /= other;
+        this->z /= other;
+        return *this;
     }
 
     Vec Vec::normalized() const {

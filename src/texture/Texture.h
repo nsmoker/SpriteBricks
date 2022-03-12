@@ -39,6 +39,9 @@ namespace engine {
             [[nodiscard]] inline unsigned int getId() const { return id; }
             void unload();
             ~Texture();
+
+            inline unsigned int getWidth() { return surf->w * srcRect.w; }
+            inline unsigned int getHeight() { return surf->h * srcRect.h; }
     };
 
     using json = nlohmann::json;

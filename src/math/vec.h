@@ -25,17 +25,33 @@ namespace engine {
 
         Vec operator+(const float &scalar) const;
 
+        Vec& operator+=(const Vec& other);
+
+        Vec& operator+=(const float& scalar);
+
         Vec operator-(const Vec &other) const;
 
         Vec operator-(const float &scalar) const;
+
+        Vec& operator-=(const Vec& other);
+
+        Vec& operator-=(const float& scalar);
 
         Vec operator*(const Vec &other) const;
 
         Vec operator*(const float &scalar) const;
 
+        Vec& operator*=(const Vec& other);
+
+        Vec& operator*=(const float& scalar);
+
         Vec operator/(const Vec &other) const;
 
         Vec operator/(const float &scalar) const;
+
+        Vec& operator/=(const Vec& other);
+
+        Vec& operator/=(const float& scalar);
 
         Vec normalized() const;
     };

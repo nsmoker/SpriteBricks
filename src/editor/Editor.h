@@ -1,7 +1,14 @@
 #pragma once
 #include "SDL_log.h"
+#include "math/rectangle.h"
+#include "math/vec.h"
+#include <algorithm>
+#include <cmath>
 #include <external/dear_imgui/imgui.h>
 #include <external/json.hpp>
+#include <filesystem>
+#include <iostream>
+#include <optional>
 #include <string>
 #include <map>
 #include <functional>
@@ -10,8 +17,12 @@
 #include <game/game.h>
 #include <fstream>
 #include <entity/Transform.h>
+#include <vector>
 
 namespace engine {
+    void drawRectangleEditor(Rectangle& rect);
+
+    void drawVecEditor(Vec& vec);
 
     template <class T>
     void addComponentOfType(Entity& entity, nlohmann::json& j) {
@@ -24,6 +35,16 @@ namespace engine {
         private:
             Editor() { registerDecorator(Transform::jObjectDecorator, &addComponentOfType<Transform>); }
             std::map<std::string, std::function<void(Entity&, nlohmann::json&)>> decoratorFactoryMap;
+            std::optional<Entity*> selectedEntity;
+            char currentSceneFileNameBuffer[512];
+            std::string currentSceneFileName;
+            bool startedOnSelected = false;
+            bool entityDragged = false;
+            std::vector<Entity*> selectedEntities;
+            std::vector<Entity*> boxedEntities;
+
+            void drawEntityEditor();
+            void drawJsonObject(nlohmann::json& j);
         public:
             inline const static std::string sceneDecorator = "Scene";
             inline const static std::string entityArrayDecorator = "Entities";
@@ -35,12 +56,130 @@ namespace engine {
             inline void registerDecorator(std::string key, const std::function<void(Entity&, nlohmann::json&)> factory) {
                 decoratorFactoryMap.emplace(key, factory);
             }
+
+
             void loadFromScene(std::string fileName);
             void saveScene(std::string fileName);
             void init();
             void update();
             void draw();
     };
+
+    template <class T>
+    void Editor<T>::drawEntityEditor() {
+        ImGui::Begin("Entity Inspector");
+
+        if (selectedEntity.has_value()) {
+            ImGui::Text("%s", selectedEntity.value()->name.c_str());
+            for (auto component : selectedEntity.value()->getComponents()) {
+                component->drawEditor();
+                ImGui::Separator();
+            }
+        }
+        ImGui::End();
+    }
+
+    template <class T>
+    void Editor<T>::update() { }
+
+    template <class T>
+    void Editor<T>::draw() {
+        ImGuiWindowFlags baseFlags = ImGuiWindowFlags_NoBackground;
+        baseFlags |= ImGuiWindowFlags_NoTitleBar;
+        baseFlags |= ImGuiWindowFlags_NoMove;
+        baseFlags |= ImGuiWindowFlags_NoResize;
+        baseFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+        baseFlags |= ImGuiWindowFlags_NoScrollbar;
+        baseFlags |= ImGuiWindowFlags_NoCollapse;
+
+        auto io = ImGui::GetIO();
+
+        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::Begin("base", nullptr, baseFlags);
+        if (ImGui::InvisibleButton("baseButton", ImVec2(io.DisplaySize.x, io.DisplaySize.y))) {
+            if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+                engine::Vec mousePosition = engine::Vec(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+                for (Entity* entity : Game::instance<T>().entities) {
+                    Transform* trans = entity->getComponent<Transform>();
+                    if (trans->bounding.contains(mousePosition)) {
+                        selectedEntity = entity;
+                    } else {
+                        selectedEntity.reset();
+                    }
+                }
+            }
+        }
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        if (selectedEntity.has_value()) {
+            Rectangle entityBounds = selectedEntity.value()->getComponent<Transform>()->bounding;
+            drawList->AddRect(entityBounds.top_left(), entityBounds.bottom_right(), ImGui::GetColorU32(IM_COL32(0, 0, 255, 255)));
+        }
+
+        ImGui::PushID("baseButton");
+
+        boxedEntities.clear();
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
+            engine::Vec clickPos = engine::Vec(io.MouseClickedPos[0].x, io.MouseClickedPos[0].y);
+            if ((selectedEntity.has_value() && selectedEntity.value()->getComponent<Transform>()->bounding.contains(clickPos)) || entityDragged) {
+                entityDragged = true;
+                selectedEntity.value()->getComponent<Transform>()->position += engine::Vec(io.MouseDelta.x, io.MouseDelta.y);
+            } else {
+                entityDragged = false;
+                engine::Vec topLeft = engine::Vec(std::min(io.MousePos.x, io.MouseClickedPos[0].x), std::min(io.MouseClickedPos[0].y, io.MousePos.y));
+                engine::Rectangle rect(std::abs(io.MousePos.x - io.MouseClickedPos[0].x), std::abs(io.MousePos.y - io.MouseClickedPos[0].y), topLeft.x, topLeft.y);
+                drawList->AddRectFilled(rect.top_left(), rect.bottom_right(), ImGui::GetColorU32(IM_COL32(20, 230, 20, 100)));
+                for (Entity* entity : Game::instance<T>().entities) {
+                    Transform* trans = entity->getComponent<Transform>();
+                    if (rect.intersects(trans->bounding)) {
+                        drawList->AddRect(trans->bounding.top_left(), trans->bounding.bottom_right(), ImGui::GetColorU32(IM_COL32(255, 255, 255, 255)));
+                        boxedEntities.push_back(entity);
+                    }
+                }
+                selectedEntity.reset();
+            }
+        }
+
+        ImGui::PopID();
+
+        ImGui::End();
+
+        const char* sceneInputId = "Scene path input";
+        bool openSceneInputPopup = false;
+        if (ImGui::BeginMainMenuBar()) {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Save scene")) {
+                    if (currentSceneFileName.empty()) {
+                        openSceneInputPopup = true;
+                    } else {
+                        saveScene(currentSceneFileName);
+                    }
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+        if (openSceneInputPopup) {
+            ImGui::OpenPopup(sceneInputId);
+        }
+
+        if (ImGui::BeginPopupModal(sceneInputId)) {
+            ImGui::InputText("Scene Path", currentSceneFileNameBuffer, 512);
+            if (ImGui::Button("Save")) {
+                currentSceneFileName.assign(currentSceneFileNameBuffer);
+                std::filesystem::path cPath = std::filesystem::current_path() / currentSceneFileName;
+                saveScene(cPath);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
+        if ((!(ImGui::IsMouseDragging(ImGuiMouseButton_Left) && ImGui::IsItemHovered())) || entityDragged) {
+            drawEntityEditor();
+        }
+    }
 
     template <class T>
     void Editor<T>::saveScene(std::string fileName) {
@@ -77,7 +216,7 @@ namespace engine {
                 return;
             }
 
-            Entity* entity = new Entity();
+            Entity* entity = new Entity(entityJObject["Name"]);
             nlohmann::json componentArray = entityJObject[Entity::componentArrayDecorator];
             for (auto& componentJObject : componentArray) {
                 std::string decorator = componentJObject["decorator"].get<std::string>();
@@ -92,5 +231,8 @@ namespace engine {
 
             Game::instance<T>().addEntity(entity);
         }
+
+        currentSceneFileName = filename;
+        stream.close();
     }
 }

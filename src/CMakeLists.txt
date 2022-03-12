@@ -11,6 +11,7 @@ add_library(engine
     graphics/batcher.cpp
     graphics/batcher.h
     editor/Editor.h
+    editor/Editor.cpp
     entity/Entity.h
     entity/Entity.cpp
     entity/Component.h

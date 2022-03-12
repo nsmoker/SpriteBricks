@@ -10,6 +10,8 @@ class PlayerController : public engine::Component {
     void update(engine::Entity& entity);
     void atDraw(engine::Entity& entity) {}
 
+    inline void drawEditor() {}
+
     const static inline std::string jObjectDecorator = "PlayerController";
     nlohmann::json serialize();
     static void from_json(const nlohmann::json &j, PlayerController &playerController) { }

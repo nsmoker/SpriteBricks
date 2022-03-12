@@ -14,9 +14,11 @@ class SpriteRenderer : public engine::Component {
         engine::Texture sprite;
         engine::Rectangle bounds;
         engine::Vec offset;
+        engine::Vec scale;
         void init(engine::Entity& entity);
         void update(engine::Entity& entity);
         void atDraw(engine::Entity& entity);
+        void drawEditor();
 
         void moveBounds(engine::Vec offset);
         void setBoundsSize(engine::Vec newSize);

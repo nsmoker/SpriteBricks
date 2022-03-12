@@ -1,4 +1,6 @@
 #include "Transform.h"
+#include "editor/Editor.h"
+#include "external/dear_imgui/imgui.h"
 
 namespace engine {
 
@@ -12,5 +14,16 @@ namespace engine {
         j["decorator"] = jObjectDecorator;
         to_json(j, *this);
         return j;
+     }
+
+     void Transform::drawEditor() {
+         ImGui::Text("Transform");
+         ImGui::Separator();
+         ImGui::Text("Position");
+         drawVecEditor(position);
+         ImGui::Text("Rotation");
+         drawVecEditor(rotationEuler);
+         ImGui::Text("Scale");
+         drawVecEditor(scale);
      }
 }

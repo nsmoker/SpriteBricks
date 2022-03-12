@@ -12,10 +12,12 @@ namespace engine {
             int id;
             std::vector<Component*> components;
         public:
+            std::string name;
+            
             inline const static std::string componentArrayDecorator = "Component";
             inline const static std::string jObjectDecorator = "Entity";
 
-            Entity() {}
+            Entity(std::string _name): name(_name) {}
             inline std::vector<Component*> getComponents() const { return components; }
             void init();
 

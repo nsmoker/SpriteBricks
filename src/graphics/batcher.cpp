@@ -20,10 +20,11 @@ namespace engine {
         {
             Color = col;
             Tex = texCoord;
-            gl_Position = vec4(vec2(position.x * cos(rotation) - position.y * sin(rotation), position.y * cos(rotation) + position.x * sin(rotation)) * scale - origin, 0.0, 1.0);
+            gl_Position = vec4(vec2(position.x * cos(rotation) - position.y * sin(rotation), position.y * cos(rotation) + position.x * sin(rotation)) * scale - origin, 0, 1.0);
         }
     )glsl";
-    const char* fragSource = R"glsl(#version 150 core
+    const char* fragSource = R"glsl(
+        #version 150 core
 
         in vec2 Tex;
         in vec4 Color;
@@ -70,8 +71,8 @@ namespace engine {
         Vec screenSize = _device->getViewportSize();
         float halfWidth = screenSize.x / 2.0f;
         float halfHeight = screenSize.y / 2.0f;
-        float retW = other.w / screenSize.x;
-        float retH = other.h / screenSize.y;
+        float retW = other.w / halfWidth;
+        float retH = other.h / halfHeight;
         float retX = (other.x - halfWidth) / halfWidth;
         float retY = (halfHeight - other.y) / halfHeight;
         return Rectangle(retW, retH, retX, retY);
@@ -102,25 +103,26 @@ namespace engine {
         verts.push_back(Vertex {
             dest.x,
             dest.y,
-            srcRect.top_left().first,
-            srcRect.top_left().second,
-            scaleX, scaleY, r, g, b, a, rotation, tex.getId()}); // Top left
-        verts.push_back(Vertex { dest.x,
-                                 dest.y + dest.h,
-                                 srcRect.top_left().first,
-                                 srcRect.bottom_right().second,
-                                 scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Bottom left
+            srcRect.top_left().x,
+            srcRect.bottom_right().y,
+            scaleX, scaleY, r, g, b, a, rotation, tex.getId()});  // Bottom left
+        verts.push_back(Vertex {
+            dest.x,
+            dest.y + (useScreenDimensions ? -dest.h : dest.h),
+            srcRect.top_left().x,
+            srcRect.top_left().y,
+            scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Top left
         verts.push_back(Vertex {
             dest.x + dest.w,
             dest.y,
-            srcRect.bottom_right().first,
-            srcRect.top_left().second,
+            srcRect.bottom_right().x,
+            srcRect.bottom_right().y,
             scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Top right
         verts.push_back(Vertex {
             dest.x + dest.w,
-            dest.y + dest.h,
-            srcRect.bottom_right().first,
-            srcRect.bottom_right().second,
+            dest.y + (useScreenDimensions ? -dest.h : dest.h),
+            srcRect.bottom_right().x,
+            srcRect.top_left().y,
             scaleX, scaleY, r, g, b, a, rotation, (unsigned int) tex.getId()}); // Bottom right
     }
 

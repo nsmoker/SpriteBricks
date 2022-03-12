@@ -23,4 +23,18 @@ namespace engine {
         x = _x;
         y = _y;
     }
+
+    bool Rectangle::contains(const Vec &point) const {
+        bool horizontallyContained = point.x <= x + w && point.x >= x;
+        bool verticallyContained = point.y >= y && point.y <= y + h;
+        return horizontallyContained && verticallyContained;
+    }
+
+    bool Rectangle::intersects(const Rectangle &other) const {
+        bool isBelow = other.top_left().y > bottom_right().y;
+        bool isAbove = top_left().y > other.bottom_right().y;
+        bool isLeft = other.bottom_right().x < top_left().x;
+        bool isRight = other.top_left().x > bottom_right().x;
+        return !((isBelow && isLeft) || (isBelow && isRight) || (isAbove && isLeft) || (isAbove && isRight));
+    }
 }

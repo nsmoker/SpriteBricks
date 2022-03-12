@@ -40,32 +40,14 @@ public:
     }
 
     void update() override {
+        editor.update();
         for (int i = 0; i < entities.size(); ++i) {
             entities[i]->update();
         }
     }
 
     void draw() override {
-        std::string scenePath = "scene.json";
-        scenePath.resize(512);
-        static bool done = false;
-        static char buf[50];
-
-        ImGui::Begin("Test Window");
-
-        ImGui::InputText("Scene path", scenePath.data(), 512 * sizeof(char));
-
-        if (ImGui::Button("Save scene")) {
-            editor.saveScene(scenePath);
-        }
-
-        if (ImGui::Button("Load scene")) {
-            editor.loadFromScene(scenePath);
-        }
-
-        ImGui::End();
-
-        //ImGui::ShowDemoWindow();
+        editor.draw();
 
         device.clear(0, 0, 0, 1);
 
