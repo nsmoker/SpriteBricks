@@ -83,11 +83,11 @@
 
 #define IM_VEC2_CLASS_EXTRA   \
         constexpr ImVec2(const engine::Vec& f) : x(f.x), y(f.y) {} \
-        operator engine::Vec() const { return engine::Vec(); } \
+        operator engine::Vec() const { return engine::Vec(x, y); } \
 
 #define IM_VEC4_CLASS_EXTRA \
         constexpr ImVec4(const engine::Vec& f) : x(f.x), y(f.y), z(f.z), w(1.0f) {}  \
-        operator engine::Vec() const { return engine::Vec(); } \
+        operator engine::Vec() const { return engine::Vec(x, y, z); } \
 
 
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.

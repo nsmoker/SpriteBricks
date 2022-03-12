@@ -34,7 +34,7 @@ public:
         for (int i = 0; i < entities.size(); ++i) {
             entities[i]->init();
         }
-        editor.loadFromScene((std::filesystem::current_path() / "appSrc/res/scene.json").c_str());
+        editor.loadFromScene((std::filesystem::current_path() / "scene.json").c_str());
 
         player = getEntityOfId(0);
     }

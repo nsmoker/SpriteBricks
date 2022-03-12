@@ -33,9 +33,9 @@ namespace engine {
     template <class T>
     class Editor {
         private:
-            Editor() { registerDecorator(Transform::jObjectDecorator, &addComponentOfType<Transform>); }
+            Editor(): selectedEntity() { registerDecorator(Transform::jObjectDecorator, &addComponentOfType<Transform>); }
             std::map<std::string, std::function<void(Entity&, nlohmann::json&)>> decoratorFactoryMap;
-            std::optional<Entity*> selectedEntity;
+            Entity* selectedEntity;
             char currentSceneFileNameBuffer[512];
             std::string currentSceneFileName;
             bool startedOnSelected = false;
@@ -69,9 +69,9 @@ namespace engine {
     void Editor<T>::drawEntityEditor() {
         ImGui::Begin("Entity Inspector");
 
-        if (selectedEntity.has_value()) {
-            ImGui::Text("%s", selectedEntity.value()->name.c_str());
-            for (auto component : selectedEntity.value()->getComponents()) {
+        if (selectedEntity) {
+            ImGui::Text("%s", selectedEntity->name.c_str());
+            for (auto component : selectedEntity->getComponents()) {
                 component->drawEditor();
                 ImGui::Separator();
             }
@@ -99,34 +99,36 @@ namespace engine {
         ImGui::Begin("base", nullptr, baseFlags);
         if (ImGui::InvisibleButton("baseButton", ImVec2(io.DisplaySize.x, io.DisplaySize.y))) {
             if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-                engine::Vec mousePosition = engine::Vec(ImGui::GetMousePos().x, ImGui::GetMousePos().y);
+                engine::Vec mousePosition = ImGui::GetMousePos();
                 for (Entity* entity : Game::instance<T>().entities) {
                     Transform* trans = entity->getComponent<Transform>();
                     if (trans->bounding.contains(mousePosition)) {
                         selectedEntity = entity;
                     } else {
-                        selectedEntity.reset();
+                        selectedEntity = nullptr;
                     }
                 }
+                entityDragged = false;
             }
         }
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        if (selectedEntity.has_value()) {
-            Rectangle entityBounds = selectedEntity.value()->getComponent<Transform>()->bounding;
+        if (selectedEntity) {
+            Rectangle entityBounds = selectedEntity->getComponent<Transform>()->bounding;
             drawList->AddRect(entityBounds.top_left(), entityBounds.bottom_right(), ImGui::GetColorU32(IM_COL32(0, 0, 255, 255)));
         }
 
         ImGui::PushID("baseButton");
 
         boxedEntities.clear();
-        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) && ImGui::IsItemHovered()) {
-            engine::Vec clickPos = engine::Vec(io.MouseClickedPos[0].x, io.MouseClickedPos[0].y);
-            if ((selectedEntity.has_value() && selectedEntity.value()->getComponent<Transform>()->bounding.contains(clickPos)) || entityDragged) {
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 6) && ImGui::IsItemHovered()) {
+            engine::Vec clickPos = io.MouseClickedPos[0];
+            if ((selectedEntity && selectedEntity->getComponent<Transform>()->bounding.contains(clickPos)) || entityDragged) {
                 entityDragged = true;
-                selectedEntity.value()->getComponent<Transform>()->position += engine::Vec(io.MouseDelta.x, io.MouseDelta.y);
+                selectedEntity->getComponent<Transform>()->position += engine::Vec(io.MouseDelta.x, io.MouseDelta.y);
             } else {
+                selectedEntity = nullptr;
                 entityDragged = false;
                 engine::Vec topLeft = engine::Vec(std::min(io.MousePos.x, io.MouseClickedPos[0].x), std::min(io.MouseClickedPos[0].y, io.MousePos.y));
                 engine::Rectangle rect(std::abs(io.MousePos.x - io.MouseClickedPos[0].x), std::abs(io.MousePos.y - io.MouseClickedPos[0].y), topLeft.x, topLeft.y);
@@ -138,7 +140,6 @@ namespace engine {
                         boxedEntities.push_back(entity);
                     }
                 }
-                selectedEntity.reset();
             }
         }
 

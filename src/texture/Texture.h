@@ -40,8 +40,8 @@ namespace engine {
             void unload();
             ~Texture();
 
-            inline unsigned int getWidth() { return surf->w * srcRect.w; }
-            inline unsigned int getHeight() { return surf->h * srcRect.h; }
+            inline unsigned int getWidth() { return width * srcRect.w; }
+            inline unsigned int getHeight() { return height * srcRect.h; }
     };
 
     using json = nlohmann::json;

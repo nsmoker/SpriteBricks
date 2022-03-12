@@ -17,7 +17,7 @@ namespace engine {
             inline const static std::string componentArrayDecorator = "Component";
             inline const static std::string jObjectDecorator = "Entity";
 
-            Entity(std::string _name): name(_name) {}
+            Entity(std::string _name): name(_name), components() {}
             inline std::vector<Component*> getComponents() const { return components; }
             void init();
 

@@ -35,6 +35,7 @@ namespace engine {
         bool isAbove = top_left().y > other.bottom_right().y;
         bool isLeft = other.bottom_right().x < top_left().x;
         bool isRight = other.top_left().x > bottom_right().x;
-        return !((isBelow && isLeft) || (isBelow && isRight) || (isAbove && isLeft) || (isAbove && isRight));
+        bool ret = !((isBelow && isLeft) || (isBelow && isRight) || (isAbove && isLeft) || (isAbove && isRight));
+        return ret;
     }
 }
