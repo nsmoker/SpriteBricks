@@ -14,6 +14,7 @@ add_library(engine
     entity/Entity.cpp
     entity/Component.h
     entity/Transform.h
+    external/stb_image.h
         math/rectangle.cpp
         math/rectangle.h
         math/vec.cpp
@@ -25,21 +26,19 @@ cmake_policy(SET CMP0072 NEW)
 find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(SDL2_image REQUIRED)
 find_package(SDL2TTF REQUIRED)
 
 add_definitions(-DGLEW_STATIC)
 
 target_include_directories(engine PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> 
-    "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${SDL2_IMAGE_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${SDL2TTF_INCLUDE_DIRS}>"
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    "$<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>" "$<BUILD_INTERFACE:${SDL2TTF_INCLUDE_DIRS}>"
     "$<BUILD_INTERFACE:${GLEW_INCLUDE_DIRS}>"
     "$<BUILD_INTERFACE:${OPENGL_INCLUDE_DIRS}>"
 )
 
 target_link_libraries(engine PUBLIC 
     ${SDL2_LIBRARIES} 
-    ${SDL2_IMAGE_LIBRARIES}
     ${SDL2TTF_LIBRARY}
     ${GLEW_LIBRARIES}
     ${OPENGL_LIBRARIES}

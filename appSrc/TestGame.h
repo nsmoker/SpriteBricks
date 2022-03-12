@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <game/game.h>
 #include <texture/Texture.h>
 #include <graphics/batcher.h>
@@ -23,7 +24,7 @@ public:
         for (int i = 0; i < entities.size(); ++i) {
             entities[i].init();
         }
-        spriteSheet = engine::Texture("sprites.png", &device);
+        spriteSheet = engine::Texture((std::filesystem::current_path() / "appSrc/res/sprites.png").c_str(), &device);
         playerTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 8.0f / 16.0f, 0));
         otherTex = spriteSheet.subTex(engine::Rectangle(1 / 16.0f, 1 / 16.0f, 1 / 16.0f, 0));
         device.setTextureFiltering(playerTex.getId(), GL_NEAREST);

@@ -67,6 +67,8 @@ namespace engine {
             // Upload a texture to the GPU. Returns the ID of the OpenGL Texture object generated.
             int uploadTexture(void* data, int width, int height, int bytesPerPixel);
 
+            inline void deleteTexture(unsigned int id) { glDeleteTextures(1, &id); }
+
             // Assign data to a mesh's vertex buffers. If the buffers do not yet exist, generates them. 
             void meshVertexData(MeshInfo& mesh, float data[], GLuint count);
 
