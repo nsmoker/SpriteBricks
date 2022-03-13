@@ -153,6 +153,11 @@ namespace engine {
             }
         }
 
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 6) && ImGui::IsItemHovered()) {
+            Game::instance<T>().batcher->origin += io.MouseDelta;
+            SDL_Log("x: %f, y: %f", io.MouseDelta.x, io.MouseDelta.y);
+        }
+
         ImGui::PopID();
 
         ImGui::End();
@@ -223,6 +228,7 @@ namespace engine {
             to_json(entityJson, *entity);
             jsonArray.push_back(entityJson);
         }
+        json["origin"] = game.batcher->origin;
         json[entityArrayDecorator] = jsonArray;
 
         std::ofstream stream(fileName);
@@ -239,7 +245,9 @@ namespace engine {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No entity array found in scene file.");
         }
 
-        Game::instance<T>().clearEntities();
+        Game& game = Game::instance<T>();
+
+        game.clearEntities();
 
         for (nlohmann::json& entityJObject : entityArray) {
             if (entityJObject[Entity::componentArrayDecorator].is_null() || entityJObject["decorator"].get<std::string>() != Entity::jObjectDecorator) {
@@ -260,8 +268,10 @@ namespace engine {
                 factory(*entity, componentJObject);
             }
 
-            Game::instance<T>().addEntity(entity);
+            game.addEntity(entity);
         }
+
+        j["origin"].get_to(game.batcher->origin);
 
         currentSceneFileName = filename;
         stream.close();

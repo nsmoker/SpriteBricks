@@ -3,6 +3,7 @@
 #include "graphicsDevice.h"
 #include "../math/rectangle.h"
 #include "../texture/Texture.h"
+#include "math/vec.h"
 
 namespace engine {
     /*
@@ -26,15 +27,15 @@ namespace engine {
                 unsigned int tex;
             };
             GraphicsDevice *_device;
-            float xOrigin = 0.0f;
-            float yOrigin = 0.0f;
             std::vector<Vertex> verts;
             std::vector<GLuint> elems;
             Shader shader;
             Material material;
             MeshInfo mesh;
-            Rectangle transRect(Rectangle other);
+            Vec transVec(const Vec& toTrans) const;
+            Rectangle transRect(const Rectangle& other) const;
         public:
+            Vec origin;
             bool useScreenDimensions = true;
             Batcher();
             explicit Batcher(GraphicsDevice *device);

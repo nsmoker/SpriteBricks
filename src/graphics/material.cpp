@@ -11,7 +11,11 @@ namespace engine {
         for(auto & uni : unis) {
             if(strcmp(uni.name, name) == 0) {
                 for(int j = 0; j < len; ++j) {
-                    uni.value.push_back(vals[j]);
+                    if (uni.value.size() > j) {
+                        uni.value[j] = (vals[j]);
+                    } else {
+                        uni.value.push_back(vals[j]);
+                    }
                 }
             }
         }

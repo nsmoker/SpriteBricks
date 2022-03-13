@@ -1,4 +1,5 @@
 #include "batcher.h"
+#include "math/vec.h"
 #include <algorithm>
 #include <iostream>
 
@@ -20,7 +21,7 @@ namespace engine {
         {
             Color = col;
             Tex = texCoord;
-            gl_Position = vec4(vec2(position.x * cos(rotation) - position.y * sin(rotation), position.y * cos(rotation) + position.x * sin(rotation)) * scale - origin, 0, 1.0);
+            gl_Position = vec4(vec2(position.x * cos(rotation) - position.y * sin(rotation), position.y * cos(rotation) + position.x * sin(rotation)) * scale + origin, 0, 1.0);
         }
     )glsl";
     const char* fragSource = R"glsl(
@@ -67,7 +68,14 @@ namespace engine {
         _device->enableAttributes(mesh, atts, 11, 5);
     }
 
-    Rectangle Batcher::transRect(Rectangle other) {
+    Vec Batcher::transVec(const Vec& vecToTransform) const {
+        Vec screenSize = _device->getViewportSize();
+        Vec halfScale = screenSize / 2.0f;
+        Vec ret = Vec((vecToTransform.x - halfScale.x) / halfScale.x + 1, (halfScale.y - vecToTransform.y) / halfScale.y - 1);
+        return ret;
+    }
+
+    Rectangle Batcher::transRect(const Rectangle &other) const {
         Vec screenSize = _device->getViewportSize();
         float halfWidth = screenSize.x / 2.0f;
         float halfHeight = screenSize.y / 2.0f;
@@ -78,9 +86,9 @@ namespace engine {
         return Rectangle(retW, retH, retX, retY);
     }
 
+
     Batcher& Batcher::operator=(Batcher const&other) {
-        xOrigin = other.xOrigin;
-        yOrigin = other.yOrigin;
+        origin = other.origin;
         verts = other.verts;
         elems = other.elems;
         shader = other.shader;
@@ -138,7 +146,9 @@ namespace engine {
                 actualData[i + j] = evilPointer[j];
             }
         }
-        float ori[] = { xOrigin, yOrigin };
+        Vec transformedOrigin = transVec(origin);
+        float ori[] = { transformedOrigin.x, transformedOrigin.y };
+        SDL_Log("Origin: x: %f, y: %f", transformedOrigin.x, transformedOrigin.y);
         material.setUni("origin", ori, 2);
         int tex = -1;
         int offset = 0;

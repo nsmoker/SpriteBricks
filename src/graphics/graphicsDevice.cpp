@@ -110,10 +110,10 @@ namespace engine {
             UniformInfo uni = call.material.shader().getUniform(i);
             switch (uni.tp) {
                 case GL_FLOAT_VEC2:
-                    glUniform2fv(uni.loc, uni.arraySize, uni.value.data());
+                    glUniform2fv(uni.loc, 1, uni.value.data());
                     break;
                 case GL_FLOAT_VEC3:
-                    glUniform3fv(uni.loc, uni.arraySize, uni.value.data());
+                    glUniform3fv(uni.loc, 1, uni.value.data());
                     break;
                 default:
                     break;
