@@ -51,6 +51,7 @@ namespace engine {
         window.init(width, height, title);
         device.init(window.getContext());
         batcher = new Batcher(&device);
+        batcher->origin = cameraPosition;
 
         init();
 
@@ -71,6 +72,7 @@ namespace engine {
                 }
             }
             update();
+            batcher->origin = cameraPosition;
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplSDL2_NewFrame();
             ImGui::NewFrame();

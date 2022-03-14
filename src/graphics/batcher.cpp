@@ -148,7 +148,6 @@ namespace engine {
         }
         Vec transformedOrigin = transVec(origin);
         float ori[] = { transformedOrigin.x, transformedOrigin.y };
-        SDL_Log("Origin: x: %f, y: %f", transformedOrigin.x, transformedOrigin.y);
         material.setUni("origin", ori, 2);
         int tex = -1;
         int offset = 0;

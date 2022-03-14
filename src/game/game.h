@@ -1,4 +1,5 @@
 #pragma once
+#include "math/vec.h"
 #include <graphics/graphicsDevice.h>
 #include <graphics/window.h>
 #include <input/InputManager.h>
@@ -13,6 +14,7 @@ namespace engine {
             InputManager input;
             Batcher* batcher;
             std::vector<Entity*> entities;
+            Vec cameraPosition = Vec(0);
 
             Game(Game const&) = delete;
             void operator=(Game const&) = delete;

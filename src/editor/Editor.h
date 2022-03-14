@@ -45,6 +45,7 @@ namespace engine {
             bool entityDragged = false;
             std::vector<Entity*> selectedEntities;
             std::vector<Entity*> boxedEntities;
+            Vec lookPosition;
 
             void drawEntityEditor();
             void drawJsonObject(nlohmann::json& j);
@@ -98,6 +99,7 @@ namespace engine {
         baseFlags |= ImGuiWindowFlags_NoCollapse;
 
         Game& game = Game::instance<T>();
+        game.batcher->origin = lookPosition;
 
         auto io = ImGui::GetIO();
 
@@ -106,7 +108,7 @@ namespace engine {
         ImGui::Begin("base", nullptr, baseFlags);
         if (ImGui::InvisibleButton("baseButton", ImVec2(io.DisplaySize.x, io.DisplaySize.y))) {
             if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
-                engine::Vec mousePosition = ImGui::GetMousePos();
+                Vec mousePosition = Vec(ImGui::GetMousePos()) + (Vec(0) - lookPosition);
                 bool foundHit = false;
                 for (Entity* entity : Game::instance<T>().entities) {
                     Transform* trans = entity->getComponent<Transform>();
@@ -126,27 +128,29 @@ namespace engine {
 
         if (selectedEntity) {
             Rectangle entityBounds = selectedEntity->getComponent<Transform>()->bounding;
-            drawList->AddRect(entityBounds.top_left(), entityBounds.bottom_right(), ImGui::GetColorU32(IM_COL32(0, 0, 255, 255)));
+            drawList->AddRect(entityBounds.top_left() + lookPosition, entityBounds.bottom_right() + lookPosition,
+                              ImGui::GetColorU32(IM_COL32(0, 0, 255, 255)));
         }
 
         ImGui::PushID("baseButton");
 
         boxedEntities.clear();
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, 6) && ImGui::IsItemHovered()) {
-            engine::Vec clickPos = io.MouseClickedPos[0];
+            Vec clickPos = Vec(io.MouseClickedPos[0]) + (Vec(0) - lookPosition);
             if ((selectedEntity && selectedEntity->getComponent<Transform>()->bounding.contains(clickPos)) || entityDragged) {
                 entityDragged = true;
-                selectedEntity->getComponent<Transform>()->position += engine::Vec(io.MouseDelta.x, io.MouseDelta.y);
+                selectedEntity->getComponent<Transform>()->position += io.MouseDelta;
             } else {
                 selectedEntity = nullptr;
                 entityDragged = false;
-                engine::Vec topLeft = engine::Vec(std::min(io.MousePos.x, io.MouseClickedPos[0].x), std::min(io.MouseClickedPos[0].y, io.MousePos.y));
-                engine::Rectangle rect(std::abs(io.MousePos.x - io.MouseClickedPos[0].x), std::abs(io.MousePos.y - io.MouseClickedPos[0].y), topLeft.x, topLeft.y);
-                drawList->AddRectFilled(rect.top_left(), rect.bottom_right(), ImGui::GetColorU32(IM_COL32(20, 230, 20, 100)));
+                Vec topLeft = Vec(std::min(io.MousePos.x, io.MouseClickedPos[0].x), std::min(io.MouseClickedPos[0].y, io.MousePos.y)) + (Vec(0) - lookPosition);
+                Rectangle rect(std::abs(io.MousePos.x - io.MouseClickedPos[0].x), std::abs(io.MousePos.y - io.MouseClickedPos[0].y), topLeft.x, topLeft.y);
+                drawList->AddRectFilled(rect.top_left() + lookPosition, rect.bottom_right() + lookPosition, ImGui::GetColorU32(IM_COL32(20, 230, 20, 100)));
                 for (Entity* entity : Game::instance<T>().entities) {
                     Transform* trans = entity->getComponent<Transform>();
                     if (rect.intersects(trans->bounding)) {
-                        drawList->AddRect(trans->bounding.top_left(), trans->bounding.bottom_right(), ImGui::GetColorU32(IM_COL32(255, 255, 255, 255)));
+                        drawList->AddRect(trans->bounding.top_left() + lookPosition, trans->bounding.bottom_right() + lookPosition,
+                                          ImGui::GetColorU32(IM_COL32(255, 255, 255, 255)));
                         boxedEntities.push_back(entity);
                     }
                 }
@@ -154,8 +158,7 @@ namespace engine {
         }
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 6) && ImGui::IsItemHovered()) {
-            Game::instance<T>().batcher->origin += io.MouseDelta;
-            SDL_Log("x: %f, y: %f", io.MouseDelta.x, io.MouseDelta.y);
+            lookPosition += io.MouseDelta;
         }
 
         ImGui::PopID();
